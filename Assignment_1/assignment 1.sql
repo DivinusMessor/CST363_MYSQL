@@ -8,6 +8,8 @@
 -- SQL statements may be split into many lines.
 -- Do not edit or remove the comment lines as these are used by the auto-grader.
 --
+-- check: is there a better way to do it instead of using from everything?
+
 -- 1  Display all records in the REGION table
 select * from region;
 
@@ -42,27 +44,33 @@ where productprice >= 100;
 select productid, productname, productprice, vendorname from product, vendor
 order by productid;
 
--- 9 Display ProductID, ProductName, ProductPrice,  VendorName and CategoryName
+-- 9 Display ProductID, ProductName, ProductPrice,  VendorName and CategoryName # check how do you know you are showing products and not everything? 
 --   for products.  Sort by ProductID
-select productid, productname, productprice, vendorname, categoryname from product, vendor
+select productid, productname, productprice, vendorname, categoryname from product, vendor, category
 order by productid;
 
 -- 10 Display ProductID, ProductName, ProductPrice  
---   for products in category "Camping" sorted by ProductID
-select 10;
+--   for products in category "Camping" sorted by ProductID # to check you can add select categoryname
+select productid, productname, productprice from product, category
+where category.categoryname = 'Camping'
+order by productid;
 
 -- 11 Display ProductID, ProductName, ProductPrice  
---   for products sold in zip code "60600" sorted by ProductID
-select 11;
+--   for products sold in zip code "60600" sorted by ProductID #check kinda confused about how to organize and how do i know it was bough? - selecttid?
+select productid, productname, productprice from salestransaction, product, store
+where storezip = '60600'
+order by productid;
 
 -- 12 Display ProductID, ProductName and ProductPrice for VendorName "Pacifica Gear" and were
---    sold in the region "Tristate".  Do not show duplicate information.
-select 12;
+--    sold in the region "Tristate".  Do not show duplicate information. #check same as above
+select distinct productid, productname, productprice from product, region, vendor
+where vendorname = 'Pacifica Gear' and regionname = 'Tristate';
 
 -- 13 Display TID, CustomerName and TDate for any customer buying a product "Easy Boot"
 --    Sorted by TID.
-select 13;
-
+select tid, customername, tdate from customer, salestransaction, product
+where productname = 'Easy Boot'
+order by tid;
 
 -- 14 Create table named company with columns companyid, name, ceo. 
 --    Make companyid the primary key.
