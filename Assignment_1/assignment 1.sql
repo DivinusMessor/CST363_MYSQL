@@ -77,20 +77,30 @@ order by tid;
 --
 -- Replace the "create table" and "insert into" statements 
 -- with your working create table or insert statement.
--- 
-create table company; 
+-- # check if should add the table name ex. companyname instead of name 
+create table company 
+(	companyid	char(3)		not null,
+    name		char(20)	not null,
+    ceo			char(20)	not null,
+    PRIMARY KEY (companyid) ); 
 
 -- insert the following data 
 --    companyid   name          ceo
 --    ACF         Acme Finance  Mike Dempsey
 --    TCA         Tara Capital  Ava Newton
 --    ALB         Albritton     Lena Dollar
-insert into company;
+insert into company values ('ACF', 'Acme Finance', 	'Mike Dempsey');
+insert into company values ('TCA', 'Tara Capital', 	'Ava Newton');
+insert into company values ('ALB', 'Albritton', 	'Lena Dollar');
 
 -- create a table named security with columns
 --     secid, name, type
 --     secid should be the primary key
-create table security;
+create table security
+(	secid	char(2)			not null,
+	name	varchar(20)		not null,
+    type 	varchar(5)		not null, 
+    PRIMARY KEY (secid) );
 
 -- insert the following data
 --    secid    name                type
@@ -99,13 +109,23 @@ create table security;
 --    CM       County Municipality Bond
 --    DU       Downtown Utlity     Bond
 --    EM       Emmitt Machines     Stock
-insert into security;
+insert into security values ('AE', 'Abhi Engineering', 		'Stock');
+insert into security values ('BH', 'Blues Health', 			'Stock');
+insert into security values ('CM', 'County Municipality',	'Bond');
+insert into security values ('DU', 'Downtown Utlity', 		'Bond');
+insert into security values ('EM', 'Emmitt Machines', 		'Stock');
 
 -- create a table named fund 
 --  with columns companyid, inceptiondate, fundid, name
 --   fundid should be the primary key
 --   companyid should be a foreign key referring to the company table.
-create table fund;
+create table fund
+(	companyid		char(3)		not null,
+	InceptionDate	date		not null,
+    fundid			char(2)		not null,
+    name			varchar(20)	not null,
+    PRIMARY KEY (fundid),
+    FOREIGN KEY (companyid) REFERENCES company(companyid) );
 
 -- CompanyID  InceptionDate   FundID Name
 --    ACF      2005-01-01     BG     Big Growth
@@ -114,7 +134,7 @@ create table fund;
 --    TCA      2006-01-01     OF     Owl Fund
 --    ALB      2005-01-01     JU     Jupiter
 --    ALB      2006-01-01     SA     Saturn
-insert into fund;
+insert into fund values ('ACF', '2005-01-01', 'BG', 'Big Growth');
 
 -- create table holdings with columns
 --   fundid, secid, quantity
