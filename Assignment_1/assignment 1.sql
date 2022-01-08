@@ -41,18 +41,21 @@ where productprice >= 100;
 
 -- 8 Display ProductID, ProductName, ProductPrice and VendorName
 --   for products sorted by ProductID
-select productid, productname, productprice, vendorname from product, vendor
+select productid, productname, productprice, vendorname 
+from product join vendor on product.vendorid = vendor.vendorid
 order by productid;
 
 -- 9 Display ProductID, ProductName, ProductPrice,  VendorName and CategoryName # check how do you know you are showing products and not everything? 
 --   for products.  Sort by ProductID
-select productid, productname, productprice, vendorname, categoryname from product, vendor, category
+select productid, productname, productprice, vendorname, categoryname 
+from product join vendor on product.vendorid = vendor.vendorid
+join category on category.categoryid = product.categoryid
 order by productid;
 
 -- 10 Display ProductID, ProductName, ProductPrice  
 --   for products in category "Camping" sorted by ProductID # to check you can add select categoryname
 select productid, productname, productprice from product, category
-where category.categoryname = 'Camping'
+where categoryname = 'Camping'
 order by productid;
 
 -- 11 Display ProductID, ProductName, ProductPrice  
@@ -208,17 +211,21 @@ delete from product where productid = '5x2';
 insert into product values('5X2', 'Action Sandal', 70.00, 'PG', 'FW');
 
 -- 21  update the price of '5X2', 'Action Sandal' by $10.00
-select * from product;
 update product
-	set productprice = '10.00' 
+	set productprice = 10
     where productid = '5X2';
-select * from product order by productid;
+
 -- 22 increase the price of all products in the 'CY' category by 5%
-update;
+select * from product where categoryid = 'CY';
+update product
+	set productprice = productprice * 1.05
+    where productid = 'CY';
+select * from product where categoryid = 'CY';
 
 -- 23 decrease the price of all products made by vendorname 'Pacifica Gear' by $5.00
 update;
 
 -- 24 List productid and productprice for all products.  Sort by productid;
-select 24;
+select productid, productprice from product
+	order by productid;
 
