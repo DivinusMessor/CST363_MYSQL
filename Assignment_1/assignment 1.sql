@@ -135,13 +135,23 @@ create table fund
 --    ALB      2005-01-01     JU     Jupiter
 --    ALB      2006-01-01     SA     Saturn
 insert into fund values ('ACF', '2005-01-01', 'BG', 'Big Growth');
+insert into fund values ('ACF', '2006-01-01', 'SG', 'Steady Growth');
+insert into fund values ('TCA', '2005-01-01', 'LF', 'Tiger Fund');
+insert into fund values ('TCA', '2006-01-01', 'OF', 'Owl Fund');
+insert into fund values ('ALB', '2005-01-01', 'JU', 'Jupiter');
+insert into fund values ('ALB', '2006-01-01', 'SA', 'Saturn');
 
 -- create table holdings with columns
 --   fundid, secid, quantity
 --   make (fundid, secid) the primary key
 --   fundid is also a foreign key referring to the fund  table
 --   secid is also a foreign key referring to the security table
-create table holdings;
+create table holdings
+(	fundid		char(2)		not null,
+	secid		char(2)		not null,
+	quantity	int			not null, 
+    PRIMARY KEY (fundid, secid),
+    FOREIGN KEY (secid) REFERENCES security(secid) );
 
 --    fundid   secid    quantity
 --     BG       AE           500
@@ -156,35 +166,53 @@ create table holdings;
 --     JU       DU          1000
 --     SA       EM          1000
 --     SA       DU          2000
-insert into holdings; 
+insert into holdings values ('BG', 'AE', '500'); 
+insert into holdings values ('BG', 'EM', '300'); 
+insert into holdings values ('SG', 'AE', '300');
+insert into holdings values ('SG', 'DU', '300'); 
+insert into holdings values ('LF', 'EM', '1000'); 
+insert into holdings values ('LF', 'BH', '1000'); 
+insert into holdings values ('OF', 'CM', '1000'); 
+insert into holdings values ('OF', 'DU', '1000'); 
+insert into holdings values ('JU', 'EM', '2000'); 
+insert into holdings values ('JU', 'DU', '1000'); 
+insert into holdings values ('SA', 'EM', '1000'); 
+insert into holdings values ('SA', 'DU', '2000'); 
 
 -- 15 Use alter table command to add a column "price" to the 
 --    security table.  The datatype should be numeric(7,2)
-alter table ; 
+alter table security 
+add price int; 
 
 -- 16 drop tables company, security, fund, holdings.
 --    You must drop them in a certain order.  
 --    In order to drop a table, you must first DROP
 --    any tables that have foreign keys refering to that table.
-drop table ; 
+drop table fund;
+drop table company;
+drop table holdings;
+drop table security; 
 
 -- For questions 17 -24, replace the "delete", "insert", "update" or "select" 
 -- statement with your working SQL statement.
 -- 17 Try to delete the row for product with productid '5X1'
-delete;
+delete from product where productid = '5x1';
 
 -- 18 Explain why does the delete in question 17 fails.
 
 
 -- 19 Try to delete the row for product with productid '5X2'
-delete;
+delete from product where productid = '5x2';
 
 -- 20 Re-insert productid '5X2'
 insert into product values('5X2', 'Action Sandal', 70.00, 'PG', 'FW');
 
 -- 21  update the price of '5X2', 'Action Sandal' by $10.00
-update;
-
+select * from product;
+update product
+	set productprice = '10.00' 
+    where productid = '5X2';
+select * from product order by productid;
 -- 22 increase the price of all products in the 'CY' category by 5%
 update;
 
