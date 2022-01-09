@@ -1,13 +1,15 @@
--- e5.1 Exercises from chapter 5
+-- e5.1 Exercises FROM chapter 5
 --
 -- Before you begin:
 -- create the tables and data using the script zagimore_schema.sql
 --
--- For questions 1-13, replace the "select 1;" with your working SQL select.
--- Make sure each select statements ends with a semi-colon ";"
+-- For questions 1-13, replace the "SELECT 1;" with your working SQL SELECT.
+-- Make sure each SELECT statements ends with a semi-colon ";"
 -- SQL statements may be split into many lines.
 -- Do not edit or remove the comment lines as these are used by the auto-grader.
 --
+-- check: is there a better way to do it instead of using FROM everything?
+
 -- 1  Display all records in the REGION table
 SELECT * FROM region;
 
@@ -17,75 +19,72 @@ SELECT storeid, storezip FROM store;
 -- 3 Display CustomerName and CustomerZip for all customers
 --   sorted alphabetically by CustomerName
 SELECT customername, customerzip FROM customer
-	ORDER BY customername;
+ORDER BY customername;
 
--- 4 Display the RegionIDs where we have stores 
+-- 4 Display the RegionIDs WHERE we have stores 
 --   and do not display duplicates
-SELECT DISTINCT regionid FROM region;
+SELECT distinct regionid FROM store;
 
--- 5 Display all information for all stores in RegionID C 
-SELECT * FROM region
-	WHERE regionid = 'C';
+-- 5 Display all information for all stores in RegionID C #chek this
+SELECT * FROM store 
+WHERE regionid = 'C';
 
 -- 6 Display CustomerID and CustomerName for customers who name 
 --   begins with the letter T
 SELECT customerid, customername FROM customer
-	WHERE customername LIKE 'T%';
+WHERE customername like 'T%';
 
 -- 7 Display ProductID, ProductName and ProductPrice for 
 --   products with a price of $100 or higher
 SELECT productid, productname, productprice FROM product
-	WHERE productprice >= 100;
+WHERE productprice >= 100;
 
 -- 8 Display ProductID, ProductName, ProductPrice and VendorName
---   for products sorted by ProductID -- Check whats the diff between on and where 
+--   for products sorted by ProductID
 SELECT productid, productname, productprice, vendorname 
-	FROM product JOIN vendor ON product.vendorid = vendor.vendorid
-    ORDER BY productid;
+FROM product JOIN vendor on product.vendorid = vendor.vendorid
+ORDER BY productid;
 
--- 9 Display ProductID, ProductName, ProductPrice,  VendorName and CategoryName
+-- 9 Display ProductID, ProductName, ProductPrice,  VendorName and CategoryName # check how do you know you are showing products and not everything? 
 --   for products.  Sort by ProductID
-SELECT productid, productname, productprice, vendorname, categoryname
-	FROM product JOIN vendor ON product.vendorid = vendor.vendorid
-    JOIN category ON product.categoryid = category.categoryid
-    ORDER BY productid;
+SELECT productid, productname, productprice, vendorname, categoryname 
+FROM product JOIN vendor on product.vendorid = vendor.vendorid
+JOIN category on category.categoryid = product.categoryid
+ORDER BY productid;
 
 -- 10 Display ProductID, ProductName, ProductPrice  
---   for products in category "Camping" sorted by ProductID - check
-SELECT productid, productname, productprice
-	FROM product JOIN category ON product.categoryid = category.categoryid
-    WHERE categoryname = 'Camping';
+--   for products in category "Camping" sorted by ProductID # to check you can add SELECT categoryname
+SELECT productid, productname, productprice FROM product, category
+WHERE categoryname = 'Camping'
+ORDER BY productid;
 
 -- 11 Display ProductID, ProductName, ProductPrice  
---   for products sold in zip code "60600" sorted by ProductID - check due to multiple jumps 
-SELECT productid, productname, productprice, store.storezip
-	FROM product JOIN store;
+--   for products sold in zip code "60600" sorted by ProductID #check kinda confused about how to organize and how do i know it was bough? - SELECTtid?
+SELECT productid, productname, productprice FROM salestransaction, product, store
+WHERE storezip = '60600'
+ORDER BY productid;
 
 -- 12 Display ProductID, ProductName and ProductPrice for VendorName "Pacifica Gear" and were
---    sold in the region "Tristate".  Do not show duplicate information. -- check the join (how does join work if there are no direct fopriegn keys?
-SELECT productid, productname, productprice, vendorname, regionname
-	FROM product JOIN vendor ON product.vendorid = vendor.vendorid
-    JOIN region
-    WHERE vendorname = 'Pacifica Gear' AND regionname = 'Tristate';
+--    sold in the region "Tristate".  Do not show duplicate information. #check same as above
+SELECT distinct productid, productname, productprice FROM product, region, vendor
+WHERE vendorname = 'Pacifica Gear' and regionname = 'Tristate';
 
 -- 13 Display TID, CustomerName and TDate for any customer buying a product "Easy Boot"
---    Sorted by TID. -- check if this is right, how do you bring in a table without a foriegn key reference - why does it not recognize the tid even though i used include? 
-SELECT tid, customername, tdate, productname
-	FROM includes JOIN product on includes.productid = product.productid
-    JOIN salestransaction on includes.tid = salestransaction.tid, customer
-    WHERE productname = 'Easy Boot'
-    ORDER BY tid;
+--    Sorted by TID.
+SELECT tid, customername, tdate FROM customer, salestransaction, product
+WHERE productname = 'Easy Boot'
+ORDER BY tid;
 
 -- 14 Create table named company with columns companyid, name, ceo. 
 --    Make companyid the primary key.
 --
 -- Replace the "create table" and "insert into" statements 
 -- with your working create table or insert statement.
--- 
-CREATE TABLE company 
-(	companyid	VARCHAR(3)		NOT NULL,
-    name		VARCHAR(20)		NOT NULL,
-    ceo			VARCHAR(20)		NOT NULL,
+-- # check if should add the table name ex. companyname instead of name 
+create table company 
+(	companyid	char(3)		not null,
+    name		char(20)	not null,
+    ceo			char(20)	not null,
     PRIMARY KEY (companyid) ); 
 
 -- insert the following data 
@@ -197,12 +196,12 @@ drop table company;
 drop table holdings;
 drop table security; 
 
--- For questions 17 -24, replace the "delete", "insert", "update" or "select" 
+-- For questions 17 -24, replace the "delete", "insert", "update" or "SELECT" 
 -- statement with your working SQL statement.
 -- 17 Try to delete the row for product with productid '5X1'
 delete FROM product WHERE productid = '5x1';
 
--- 18 Explain why does the delete in question 17 fails. - check this one 
+-- 18 Explain why does the delete in question 17 fails. # check i need help with this does it have to do with how the forign key works? do i need to delete another tables before I can delete this one?
 
 
 -- 19 Try to delete the row for product with productid '5X2'
@@ -214,18 +213,22 @@ insert into product values('5X2', 'Action Sandal', 70.00, 'PG', 'FW');
 -- 21  update the price of '5X2', 'Action Sandal' by $10.00
 update product
 	set productprice = 10
-	WHERE productid = '5X2';
+    WHERE productid = '5X2';
 
--- 22 increase the price of all products in the 'CY' category by 5%
+-- 22 increase the price of all products in the 'CY' category by 5% - Check this cause it doesn't want to change-- 
+SELECT * FROM product WHERE categoryid = 'CY';
 UPDATE product 
 	SET productprice = productprice * 1.05 
-	WHERE categoryid = 'CY';
+    WHERE categoryid = 'CY';
+SELECT * FROM product WHERE categoryid = 'CY';
 
--- 23 decrease the price of all products made by vendorname 'Pacifica Gear' by $5.00
+-- 23 decrease the price of all products made by vendorname 'Pacifica Gear' by $5.00 #Check why cant i order it FROM vendorid?
+SELECT * FROM product JOIN vendor on product.vendorid = vendor.vendorid WHERE vendor.vendorname = 'Pacifica Gear';
 update product 
 	set productprice = productprice - 5
-	WHERE vendorid = 'PG';
-
+    WHERE vendorid = 'PG';
+SELECT * FROM product JOIN vendor on product.vendorid = vendor.vendorid WHERE vendor.vendorname = 'Pacifica Gear';
 -- 24 List productid and productprice for all products.  Sort by productid;
 SELECT productid, productprice FROM product
 	ORDER BY productid;
+
