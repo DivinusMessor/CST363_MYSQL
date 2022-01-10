@@ -57,16 +57,23 @@ SELECT productid, productname, productprice
     WHERE categoryname = 'Camping';
 
 -- 11 Display ProductID, ProductName, ProductPrice  
---   for products sold in zip code "60600" sorted by ProductID - check due to multiple jumps 
-SELECT productid, productname, productprice, store.storezip
-	FROM product JOIN store;
+--   for products sold in zip code "60600" sorted by ProductID 
+SELECT product.productid, product.productname, product.productprice
+	FROM product JOIN includes ON product.productid = includes.productid
+    JOIN salestransaction ON salestransaction.tid = includes.tid
+    JOIN store ON store.storeid = salestransaction.storeid
+    WHERE store.storezip = '60600'
+    ORDER BY product.productid;
 
 -- 12 Display ProductID, ProductName and ProductPrice for VendorName "Pacifica Gear" and were
 --    sold in the region "Tristate".  Do not show duplicate information. -- check the join (how does join work if there are no direct fopriegn keys?
-SELECT productid, productname, productprice, vendorname, regionname
+SELECT product.productid, product.productname, product.productprice, vendor.vendorname, region.regionname
 	FROM product JOIN vendor ON product.vendorid = vendor.vendorid
-    JOIN region
-    WHERE vendorname = 'Pacifica Gear' AND regionname = 'Tristate';
+    JOIN includes ON includes.productid = product.productid 
+    JOIN salestransaction ON salestransaction.tid = includes.tid
+    JOIN store ON store.storeid = salestransaction.storeid
+    JOIN region ON region.regionid = store.regionid
+    WHERE vendor.vendorname = 'Pacifica Gear' AND region.regionname = 'Tristate';
 
 -- 13 Display TID, CustomerName and TDate for any customer buying a product "Easy Boot"
 --    Sorted by TID. -- check if this is right, how do you bring in a table without a foriegn key reference - why does it not recognize the tid even though i used include? 
@@ -202,8 +209,8 @@ drop table security;
 -- 17 Try to delete the row for product with productid '5X1'
 delete FROM product WHERE productid = '5x1';
 
--- 18 Explain why does the delete in question 17 fails. - check this one 
-
+-- 18 Explain why does the delete in question 17 fails.
+If the row is connected to another table you must delete the other table before deleting the desired row 
 
 -- 19 Try to delete the row for product with productid '5X2'
 delete FROM product WHERE productid = '5x2';
