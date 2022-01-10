@@ -38,23 +38,23 @@ SELECT productid, productname, productprice FROM product
 	WHERE productprice >= 100;
 
 -- 8 Display ProductID, ProductName, ProductPrice and VendorName
---   for products sorted by ProductID -- Check whats the diff between on and where 
-SELECT productid, productname, productprice, vendorname 
+--   for products sorted by ProductID
+SELECT product.productid, product.productname, product.productprice, vendor.vendorname 
 	FROM product JOIN vendor ON product.vendorid = vendor.vendorid
-    ORDER BY productid;
+    ORDER BY product.productid;
 
 -- 9 Display ProductID, ProductName, ProductPrice,  VendorName and CategoryName
 --   for products.  Sort by ProductID
-SELECT productid, productname, productprice, vendorname, categoryname
+SELECT product.productid, product.productname, product.productprice, vendor.vendorname, category.categoryname
 	FROM product JOIN vendor ON product.vendorid = vendor.vendorid
     JOIN category ON product.categoryid = category.categoryid
-    ORDER BY productid;
+    ORDER BY product.productid;
 
 -- 10 Display ProductID, ProductName, ProductPrice  
---   for products in category "Camping" sorted by ProductID - check
-SELECT productid, productname, productprice
+--   for products in category "Camping" sorted by ProductID
+SELECT product.productid, product.productname, product.productprice
 	FROM product JOIN category ON product.categoryid = category.categoryid
-    WHERE categoryname = 'Camping';
+    WHERE category.categoryname = 'Camping';
 
 -- 11 Display ProductID, ProductName, ProductPrice  
 --   for products sold in zip code "60600" sorted by ProductID 
@@ -65,9 +65,9 @@ SELECT product.productid, product.productname, product.productprice
     WHERE store.storezip = '60600'
     ORDER BY product.productid;
 
--- 12 Display ProductID, ProductName and ProductPrice for VendorName "Pacifica Gear" and were
---    sold in the region "Tristate".  Do not show duplicate information. -- check the join (how does join work if there are no direct fopriegn keys?
-SELECT product.productid, product.productname, product.productprice, vendor.vendorname, region.regionname
+-- 12 Display ProductID, ProductName and ProductPrice for VendorName "Pacifica Gear" and were -- check so you only need to show the first 3 described? 
+--    sold in the region "Tristate".  Do not show duplicate information.
+SELECT product.productid, product.productname, product.productprice
 	FROM product JOIN vendor ON product.vendorid = vendor.vendorid
     JOIN includes ON includes.productid = product.productid 
     JOIN salestransaction ON salestransaction.tid = includes.tid
@@ -76,12 +76,13 @@ SELECT product.productid, product.productname, product.productprice, vendor.vend
     WHERE vendor.vendorname = 'Pacifica Gear' AND region.regionname = 'Tristate';
 
 -- 13 Display TID, CustomerName and TDate for any customer buying a product "Easy Boot"
---    Sorted by TID. -- check if this is right, how do you bring in a table without a foriegn key reference - why does it not recognize the tid even though i used include? 
-SELECT tid, customername, tdate, productname
-	FROM includes JOIN product on includes.productid = product.productid
-    JOIN salestransaction on includes.tid = salestransaction.tid, customer
-    WHERE productname = 'Easy Boot'
-    ORDER BY tid;
+--    Sorted by TID.
+SELECT salestransaction.tid, customer.customername, salestransaction.tdate
+	FROM includes JOIN salestransaction ON includes.tid = salestransaction.tid
+	JOIN product ON product.productid = includes.productid
+    JOIN customer ON salestransaction.customerid = customer.customerid
+    WHERE product.productname = 'Easy Boot'
+    ORDER BY salestransaction.tid;
 
 -- 14 Create table named company with columns companyid, name, ceo. 
 --    Make companyid the primary key.
@@ -100,17 +101,17 @@ CREATE TABLE company
 --    ACF         Acme Finance  Mike Dempsey
 --    TCA         Tara Capital  Ava Newton
 --    ALB         Albritton     Lena Dollar
-insert into company values ('ACF', 'Acme Finance', 	'Mike Dempsey');
-insert into company values ('TCA', 'Tara Capital', 	'Ava Newton');
-insert into company values ('ALB', 'Albritton', 	'Lena Dollar');
+INSERT INTO company VALUES ('ACF', 'Acme Finance', 	'Mike Dempsey');
+INSERT INTO company VALUES ('TCA', 'Tara Capital', 	'Ava Newton');
+INSERT INTO company VALUES ('ALB', 'Albritton', 	'Lena Dollar');
 
 -- create a table named security with columns
 --     secid, name, type
 --     secid should be the primary key
 create table security
-(	secid	char(2)			not null,
-	name	varchar(20)		not null,
-    type 	varchar(5)		not null, 
+(	secid	VARCHAR(2)		NOT NULL,
+	name	VARCHAR(20)		NOT NULL,
+    type 	VARCHAR(5)		NOT NULL, 
     PRIMARY KEY (secid) );
 
 -- insert the following data
@@ -120,21 +121,21 @@ create table security
 --    CM       County Municipality Bond
 --    DU       Downtown Utlity     Bond
 --    EM       Emmitt Machines     Stock
-insert into security values ('AE', 'Abhi Engineering', 		'Stock');
-insert into security values ('BH', 'Blues Health', 			'Stock');
-insert into security values ('CM', 'County Municipality',	'Bond');
-insert into security values ('DU', 'Downtown Utlity', 		'Bond');
-insert into security values ('EM', 'Emmitt Machines', 		'Stock');
+INSERT INTO security VALUES ('AE', 'Abhi Engineering', 		'Stock');
+INSERT INTO security VALUES ('BH', 'Blues Health', 			'Stock');
+INSERT INTO security VALUES ('CM', 'County Municipality',	'Bond');
+INSERT INTO security VALUES ('DU', 'Downtown Utlity', 		'Bond');
+INSERT INTO security VALUES ('EM', 'Emmitt Machines', 		'Stock');
 
 -- create a table named fund 
 --  with columns companyid, inceptiondate, fundid, name
 --   fundid should be the primary key
 --   companyid should be a foreign key referring to the company table.
-create table fund
-(	companyid		char(3)		not null,
-	InceptionDate	date		not null,
-    fundid			char(2)		not null,
-    name			varchar(20)	not null,
+CREATE TABLE fund
+(	companyid		VARCHAR(3)		NOT NULL,
+	InceptionDate	DATE			NOT NULL,
+    fundid			VARCHAR(2)		NOT NULL,
+    name			VARCHAR(20)		NOT NULL,
     PRIMARY KEY (fundid),
     FOREIGN KEY (companyid) REFERENCES company(companyid) );
 
@@ -145,22 +146,22 @@ create table fund
 --    TCA      2006-01-01     OF     Owl Fund
 --    ALB      2005-01-01     JU     Jupiter
 --    ALB      2006-01-01     SA     Saturn
-insert into fund values ('ACF', '2005-01-01', 'BG', 'Big Growth');
-insert into fund values ('ACF', '2006-01-01', 'SG', 'Steady Growth');
-insert into fund values ('TCA', '2005-01-01', 'LF', 'Tiger Fund');
-insert into fund values ('TCA', '2006-01-01', 'OF', 'Owl Fund');
-insert into fund values ('ALB', '2005-01-01', 'JU', 'Jupiter');
-insert into fund values ('ALB', '2006-01-01', 'SA', 'Saturn');
+INSERT INTO fund VALUES ('ACF', '2005-01-01', 'BG', 'Big Growth');
+INSERT INTO fund VALUES ('ACF', '2006-01-01', 'SG', 'Steady Growth');
+INSERT INTO fund VALUES ('TCA', '2005-01-01', 'LF', 'Tiger Fund');
+INSERT INTO fund VALUES ('TCA', '2006-01-01', 'OF', 'Owl Fund');
+INSERT INTO fund VALUES ('ALB', '2005-01-01', 'JU', 'Jupiter');
+INSERT INTO fund VALUES ('ALB', '2006-01-01', 'SA', 'Saturn');
 
 -- create table holdings with columns
 --   fundid, secid, quantity
 --   make (fundid, secid) the primary key
 --   fundid is also a foreign key referring to the fund  table
 --   secid is also a foreign key referring to the security table
-create table holdings
-(	fundid		char(2)		not null,
-	secid		char(2)		not null,
-	quantity	int			not null, 
+CREATE TABLE holdings
+(	fundid		VARCHAR(2)		NOT NULL,
+	secid		VARCHAR(2)		NOT NULL,
+	quantity	INT				NOT NULL, 
     PRIMARY KEY (fundid, secid),
     FOREIGN KEY (secid) REFERENCES security(secid) );
 
@@ -177,60 +178,60 @@ create table holdings
 --     JU       DU          1000
 --     SA       EM          1000
 --     SA       DU          2000
-insert into holdings values ('BG', 'AE', '500'); 
-insert into holdings values ('BG', 'EM', '300'); 
-insert into holdings values ('SG', 'AE', '300');
-insert into holdings values ('SG', 'DU', '300'); 
-insert into holdings values ('LF', 'EM', '1000'); 
-insert into holdings values ('LF', 'BH', '1000'); 
-insert into holdings values ('OF', 'CM', '1000'); 
-insert into holdings values ('OF', 'DU', '1000'); 
-insert into holdings values ('JU', 'EM', '2000'); 
-insert into holdings values ('JU', 'DU', '1000'); 
-insert into holdings values ('SA', 'EM', '1000'); 
-insert into holdings values ('SA', 'DU', '2000'); 
+INSERT INTO holdings VALUES ('BG', 'AE', '500'); 
+INSERT INTO holdings VALUES ('BG', 'EM', '300'); 
+INSERT INTO holdings VALUES ('SG', 'AE', '300');
+INSERT INTO holdings VALUES ('SG', 'DU', '300'); 
+INSERT INTO holdings VALUES ('LF', 'EM', '1000'); 
+INSERT INTO holdings VALUES ('LF', 'BH', '1000'); 
+INSERT INTO holdings VALUES ('OF', 'CM', '1000'); 
+INSERT INTO holdings VALUES ('OF', 'DU', '1000'); 
+INSERT INTO holdings VALUES ('JU', 'EM', '2000'); 
+INSERT INTO holdings VALUES ('JU', 'DU', '1000'); 
+INSERT INTO holdings VALUES ('SA', 'EM', '1000'); 
+INSERT INTO holdings VALUES ('SA', 'DU', '2000'); 
 
 -- 15 Use alter table command to add a column "price" to the 
 --    security table.  The datatype should be numeric(7,2)
-alter table security 
-add price int; 
+ALTER TABLE security 
+ADD price INT; 
 
 -- 16 drop tables company, security, fund, holdings.
 --    You must drop them in a certain order.  
 --    In order to drop a table, you must first DROP
 --    any tables that have foreign keys refering to that table.
-drop table fund;
-drop table company;
-drop table holdings;
-drop table security; 
+DROP TABLE fund;
+DROP TABLE company;
+DROP TABLE holdings;
+DROP TABLE security; 
 
 -- For questions 17 -24, replace the "delete", "insert", "update" or "select" 
 -- statement with your working SQL statement.
 -- 17 Try to delete the row for product with productid '5X1'
-delete FROM product WHERE productid = '5x1';
+DELETE FROM product WHERE productid = '5x1';
 
 -- 18 Explain why does the delete in question 17 fails.
-If the row is connected to another table you must delete the other table before deleting the desired row 
+If the row is connected to another table you must delete the other table before deleting the desired row;
 
 -- 19 Try to delete the row for product with productid '5X2'
-delete FROM product WHERE productid = '5x2';
+DELETE FROM product WHERE productid = '5X2';
 
 -- 20 Re-insert productid '5X2'
-insert into product values('5X2', 'Action Sandal', 70.00, 'PG', 'FW');
+INSERT INTO product VALUES('5X2', 'Action Sandal', 70.00, 'PG', 'FW');
 
 -- 21  update the price of '5X2', 'Action Sandal' by $10.00
-update product
-	set productprice = 10
+UPDATE product
+	SET productprice = 10
 	WHERE productid = '5X2';
 
--- 22 increase the price of all products in the 'CY' category by 5%
+-- 22 increase the price of all products in the 'CY' category by 5% -- check why does this only change a few of them? - what is data truncated?
 UPDATE product 
 	SET productprice = productprice * 1.05 
 	WHERE categoryid = 'CY';
 
 -- 23 decrease the price of all products made by vendorname 'Pacifica Gear' by $5.00
-update product 
-	set productprice = productprice - 5
+UPDATE product 
+	SET productprice = productprice - 5
 	WHERE vendorid = 'PG';
 
 -- 24 List productid and productprice for all products.  Sort by productid;
