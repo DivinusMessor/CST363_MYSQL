@@ -5,8 +5,10 @@
 --   zagimore_schema.sql
 
 -- 1  Display the RegionID, RegionName and number of stores in each region.
-select 1;
-
+select region.regionid, region.regionname from region join store on region.regionid = store.regionid order by region.regionid;
+select region.regionid from region;
+select region.regionid, count(region.regionid) from region order by count(*) desc;
+ 
 -- 2 Display CategoryID and average price of products in that category.
 --   Use the ROUND function to show 2 digits after decimal point in average price.
 select 2;
