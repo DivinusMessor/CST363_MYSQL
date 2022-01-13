@@ -5,19 +5,29 @@
 --   zagimore_schema.sql
 
 -- 1  Display the RegionID, RegionName and number of stores in each region.
-select region.regionid, region.regionname from region join store on region.regionid = store.regionid order by region.regionid;
-select region.regionid from region;
-select region.regionid, count(region.regionid) from region order by count(*) desc;
- 
+SELECT region.regionid, region.regionname, COUNT(store.storeid) 
+FROM region JOIN store ON region.regionid = store.regionid 
+GROUP BY region.regionid;
+
 -- 2 Display CategoryID and average price of products in that category.
 --   Use the ROUND function to show 2 digits after decimal point in average price.
-select 2;
+SELECT category.categoryid, AVG(product.productprice) 
+FROM category JOIN product ON category.categoryid = product.categoryid 
+GROUP BY category.categoryid;
 
 -- 3 Display CategoryID and number of items purchased in that category.
-select 3;
+SELECT category.categoryid, COUNT(salestransaction.tid)
+FROM category JOIN product ON category.categoryid = product.categoryid
+JOIN includes ON product.productid = includes.productid
+JOIN salestransaction ON includes.tid = salestransaction.tid
+GROUP BY category.categoryid;
 
 -- 4 Display RegionID, RegionName and total amount of sales as "AmountSpent"
-select 4;
+SELECT region.regionid, region.regionname, product.productprice, product.productname
+FROM product JOIN includes ON product.productid = includes.productid
+JOIN salestransaction ON includes.tid = salestransaction.tid 
+JOIN store ON salestransaction.storeid = store.storeid
+JOIN region ON store.regionid = region.regionid;
 
 -- 5 Display the TID and total number of items in the sale
 --    for all sales where the total number of items is greater than 3
