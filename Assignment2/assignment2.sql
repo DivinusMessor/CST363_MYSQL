@@ -22,7 +22,7 @@ JOIN includes ON product.productid = includes.productid
 JOIN salestransaction ON includes.tid = salestransaction.tid
 GROUP BY category.categoryid;
 
--- 4 Display RegionID, RegionName and total amount of sales as "AmountSpent"
+-- 4 Display RegionID, RegionName and total amount of sales as "AmountSpent" - check
 SELECT region.regionid, region.regionname, product.productprice, product.productname
 FROM product JOIN includes ON product.productid = includes.productid
 JOIN salestransaction ON includes.tid = salestransaction.tid 
@@ -31,7 +31,8 @@ JOIN region ON store.regionid = region.regionid;
 
 -- 5 Display the TID and total number of items in the sale
 --    for all sales where the total number of items is greater than 3
-select 5;
+SELECT saletransaction.tid, product.productprice, product.productname
+FROM ;
 
 -- 6 For vendor whose product sales exceeds $700, display the
 --    VendorID, VendorName and total amount of sales as "TotalSales"
