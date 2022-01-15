@@ -6,33 +6,37 @@
 
 -- 1  Display the RegionID, RegionName and number of stores in each region.
 SELECT region.regionid, region.regionname, COUNT(store.storeid) 
-FROM region JOIN store ON region.regionid = store.regionid 
-GROUP BY region.regionid;
+   FROM region JOIN store ON region.regionid = store.regionid 
+   GROUP BY region.regionid;
 
 -- 2 Display CategoryID and average price of products in that category.
---   Use the ROUND function to show 2 digits after decimal point in average price.
-SELECT category.categoryid, AVG(product.productprice) 
-FROM category JOIN product ON category.categoryid = product.categoryid 
-GROUP BY category.categoryid;
+--   Use the ROUND function to show 2 digits after decimal point in average price. - check
+SELECT category.categoryid, ROUND(AVG(product.productprice), 2)
+   FROM category JOIN product ON category.categoryid = product.categoryid 
+   GROUP BY category.categoryid;
 
 -- 3 Display CategoryID and number of items purchased in that category.
 SELECT category.categoryid, COUNT(salestransaction.tid)
-FROM category JOIN product ON category.categoryid = product.categoryid
-JOIN includes ON product.productid = includes.productid
-JOIN salestransaction ON includes.tid = salestransaction.tid
-GROUP BY category.categoryid;
+   FROM category JOIN product ON category.categoryid = product.categoryid
+   JOIN includes ON product.productid = includes.productid
+   JOIN salestransaction ON includes.tid = salestransaction.tid
+   GROUP BY category.categoryid;
 
 -- 4 Display RegionID, RegionName and total amount of sales as "AmountSpent" - check
-SELECT region.regionid, region.regionname, product.productprice, product.productname
-FROM product JOIN includes ON product.productid = includes.productid
-JOIN salestransaction ON includes.tid = salestransaction.tid 
-JOIN store ON salestransaction.storeid = store.storeid
-JOIN region ON store.regionid = region.regionid;
+SELECT region.regionid, region.regionname, CONCAT( "$ ", SUM( product.productprice)) as AmountSpent
+   FROM product JOIN includes ON product.productid = includes.productid
+   JOIN salestransaction ON includes.tid = salestransaction.tid 
+   JOIN store ON salestransaction.storeid = store.storeid
+   JOIN region ON store.regionid = region.regionid
+   GROUP BY region.regionid;
 
 -- 5 Display the TID and total number of items in the sale
 --    for all sales where the total number of items is greater than 3
-SELECT saletransaction.tid, product.productprice, product.productname
-FROM ;
+SELECT salestransaction.tid, COUNT(salestransaction.tid)
+   FROM product JOIN includes ON product.productid = includes.productid
+   JOIN salestransaction ON includes.tid = salestransaction.tid
+   GROUP BY salestransaction.tid
+   WHERE COUNT(salestransaction.tid) > 3; -- REDO
 
 -- 6 For vendor whose product sales exceeds $700, display the
 --    VendorID, VendorName and total amount of sales as "TotalSales"
