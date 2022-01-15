@@ -36,29 +36,41 @@ SELECT salestransaction.tid, COUNT(salestransaction.tid)
    FROM product JOIN includes ON product.productid = includes.productid
    JOIN salestransaction ON includes.tid = salestransaction.tid
    GROUP BY salestransaction.tid
-   WHERE COUNT(salestransaction.tid) > 3; -- REDO
+   WHERE COUNT(salestransaction.tid) > 3; -- check 
 
 -- 6 For vendor whose product sales exceeds $700, display the
 --    VendorID, VendorName and total amount of sales as "TotalSales"
-select 6;
+SELECT vendor.vendorid, vendor.vendorname, CONCAT("$ ", SUM(product.productprice)) as TotalSales
+FROM vendor JOIN product ON vendor.vendorid = product.vendorid
+GROUP BY vendor.vendorname
+WHERE TotalSales > 700; -- check 
 
 -- 7 Display the ProductID, Productname and ProductPrice
 --    of the cheapest product.
-select 7;
+SELECT product.productid, product.productname, MIN(product.productprice)
+FROM product;
 
 -- 8 Display the ProductID, Productname and VendorName
 --    for products whose price is below average price of all products
---    sorted by productid.
-select 8;
+--    sorted by productid. -- error 
+SELECT product.productid, product.productname, vendor.vendorname, product.productprice
+FROM product JOIN vendor ON product.vendorid = vendor.vendorid
+WHERE product.productprice > AVG(product.productprice);
 
 -- 9 Display the ProductID and Productname from products that
---    have sold more than 2 (total quantity).  Sort by ProductID
-select 9;
+--    have sold more than 2 (total quantity).  Sort by ProductID -- check 
+SELECT product.productid, product.productname, salestransaction.tid
+FROM product JOIN includes ON product.productid = includes.productid 
+JOIN salestransaction ON includes.tid = salestransaction.tid
+WHERE COUNT(product.productname) > 2
+GROUP BY product.productname
+ORDER BY product.productid;
 
 -- 10 Display the ProductID for the product that has been 
 --    sold the most (highest total quantity across all
 --    transactions). 
-select 10;
+SELECT MAX(COUNT(product.productid))
+FROM product;
 
 
 -- 11 Rewrite query 30 in chapter 5 using a join.
