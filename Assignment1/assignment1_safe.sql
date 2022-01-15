@@ -27,6 +27,7 @@ SELECT distinct regionid FROM store;
 
 -- 5 Display all information for all stores in RegionID C #chek this
 SELECT * FROM store 
+JOIN region ON store.regionid = region.regionid
 WHERE regionid = 'C';
 
 -- 6 Display CustomerID and CustomerName for customers who name 

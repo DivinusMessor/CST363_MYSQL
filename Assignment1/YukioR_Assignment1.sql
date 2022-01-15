@@ -24,8 +24,8 @@ SELECT customername, customerzip FROM customer
 SELECT DISTINCT regionid FROM region;
 
 -- 5 Display all information for all stores in RegionID C
-SELECT * FROM region
-	WHERE regionid = 'C';
+SELECT * FROM store
+	WHERE store.regionid = 'C';
 
 -- 6 Display CustomerID and CustomerName for customers who name
 --   begins with the letter T
@@ -197,7 +197,6 @@ INSERT INTO holdings VALUES ('SA', 'DU', '2000');
 select * from security;
 ALTER TABLE security
 ADD price numeric(7,2);
-select * from security;
 
 -- 16 drop tables company, security, fund, holdings.
 --    You must drop them in a certain order.
