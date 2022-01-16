@@ -60,6 +60,7 @@ SELECT product.productid, product.productname, vendor.vendorname
 
 -- 9 Display the ProductID and Productname from products that
 --    have sold more than 2 (total quantity).  Sort by ProductID
+"Check this to see if it is good"
 SELECT product.productid, product.productname, includes.quantity
    FROM product JOIN includes ON product.productid = includes.productid
    WHERE SUM(includes.quantity) > 2
@@ -69,12 +70,31 @@ SELECT product.productid, product.productname, includes.quantity
 -- 10 Display the ProductID for the product that has been 
 --    sold the most (highest total quantity across all
 --    transactions). 
-select 10;
+"Check"
+SELECT includes.productid
+   FROM includes
+   WHERE includes.quantity = (SELECT MAX(quantity) FROM includes);
 
 
 -- 11 Rewrite query 30 in chapter 5 using a join.
+SELECT product.productid, product.productname, product.productprice
+FROM product INNER JOIN includes ON product.productid = includes.productid
+GROUP BY product.productid 
+HAVING SUM(includes.quantity) > 3;
 
 -- 12 Rewrite query 31 using a join.
+SELECT product.productid, product.productname, product.productprice, includes.tid
+FROM product JOIN includes ON product.productid = includes.productid 
+WHERE product.productid 
+
+"Book example"
+SELECT product.productid, product.productname, product.productprice
+FROM product 
+WHERE product.productid IN 
+(SELECT includes.productid
+FROM includes 
+GROUP BY includes.productid
+HAVING COUNT(includes.tid) > 1);
 
 -- 13 create a view over the product, salestransaction, includes, customer, store, region tables
 --     with columns: tdate, productid, productname, productprice, quantity, customerid, customername, 
