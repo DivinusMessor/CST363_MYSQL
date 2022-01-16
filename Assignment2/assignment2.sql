@@ -5,25 +5,25 @@
 --   zagimore_schema.sql
 
 -- 1  Display the RegionID, RegionName and number of stores in each region.
-SELECT region.regionid, region.regionname, COUNT(store.storeid) 
-   FROM region JOIN store ON region.regionid = store.regionid 
+SELECT region.regionid, region.regionname, COUNT(store.storeid)
+   FROM region JOIN store ON region.regionid = store.regionid
    GROUP BY region.regionid;
 
 -- 2 Display CategoryID and average price of products in that category.
---   Use the ROUND function to show 2 digits after decimal point in average price. - check
+--   Use the ROUND function to show 2 digits after decimal point in average price.
 SELECT category.categoryid, ROUND(AVG(product.productprice), 2)
-   FROM category JOIN product ON category.categoryid = product.categoryid 
+   FROM product JOIN category ON product.categoryid = category.categoryid
    GROUP BY category.categoryid;
 
--- 3 Display CategoryID and number of items purchased in that category.
-SELECT category.categoryid, COUNT(salestransaction.tid)
-   FROM category JOIN product ON category.categoryid = product.categoryid
+-- 3 Display CategoryID and number of items purchased in that category. 
+"Do we check the number of products or the quanity?"
+SELECT category.categoryid, COUNT(product.productname)
+   FROM product JOIN category ON product.categoryid = category.categoryid
    JOIN includes ON product.productid = includes.productid
-   JOIN salestransaction ON includes.tid = salestransaction.tid
    GROUP BY category.categoryid;
 
--- 4 Display RegionID, RegionName and total amount of sales as "AmountSpent" - check
-SELECT region.regionid, region.regionname, CONCAT( "$ ", SUM( product.productprice)) as AmountSpent
+-- 4 Display RegionID, RegionName and total amount of sales as "AmountSpent"
+SELECT region.regionid, region.regionname, SUM(product.productprice) as AmountSpent
    FROM product JOIN includes ON product.productid = includes.productid
    JOIN salestransaction ON includes.tid = salestransaction.tid 
    JOIN store ON salestransaction.storeid = store.storeid
@@ -36,41 +36,40 @@ SELECT salestransaction.tid, COUNT(salestransaction.tid)
    FROM product JOIN includes ON product.productid = includes.productid
    JOIN salestransaction ON includes.tid = salestransaction.tid
    GROUP BY salestransaction.tid
-   WHERE COUNT(salestransaction.tid) > 3; -- check 
+   HAVING COUNT(salestransaction.tid) > 3;
 
 -- 6 For vendor whose product sales exceeds $700, display the
 --    VendorID, VendorName and total amount of sales as "TotalSales"
-SELECT vendor.vendorid, vendor.vendorname, CONCAT("$ ", SUM(product.productprice)) as TotalSales
-FROM vendor JOIN product ON vendor.vendorid = product.vendorid
-GROUP BY vendor.vendorname
-WHERE TotalSales > 700; -- check 
+SELECT vendor.vendorid, vendor.vendorname, CONCAT("$", SUM(product.productprice)) AS TotalSales
+   FROM vendor JOIN product ON vendor.vendorid = product.vendorid
+   GROUP BY vendorname
+   HAVING SUM(product.productprice) > 700;
 
 -- 7 Display the ProductID, Productname and ProductPrice
 --    of the cheapest product.
-SELECT product.productid, product.productname, MIN(product.productprice)
-FROM product;
+SELECT product.productid, product.productname, product.productprice
+   FROM product 
+   WHERE product.productprice = (SELECT MIN(product.productprice) FROM product)
 
 -- 8 Display the ProductID, Productname and VendorName
 --    for products whose price is below average price of all products
---    sorted by productid. -- error 
-SELECT product.productid, product.productname, vendor.vendorname, product.productprice
-FROM product JOIN vendor ON product.vendorid = vendor.vendorid
-WHERE product.productprice > AVG(product.productprice);
+--    sorted by productid. -- CHECK need to redo 
+SELECT product.productid, product.productname, vendor.vendorname
+   FROM product JOIN vendor ON product.vendorid = vendor.vendorid;
+   WHERE product.productprice < (SELECT AVG(product.productprice) FROM product);
 
 -- 9 Display the ProductID and Productname from products that
---    have sold more than 2 (total quantity).  Sort by ProductID -- check 
-SELECT product.productid, product.productname, salestransaction.tid
-FROM product JOIN includes ON product.productid = includes.productid 
-JOIN salestransaction ON includes.tid = salestransaction.tid
-WHERE COUNT(product.productname) > 2
-GROUP BY product.productname
-ORDER BY product.productid;
+--    have sold more than 2 (total quantity).  Sort by ProductID
+SELECT product.productid, product.productname, includes.quantity
+   FROM product JOIN includes ON product.productid = includes.productid
+   WHERE SUM(includes.quantity) > 2
+   GROUP BY product.productid
+   ORDER BY product.productid;
 
 -- 10 Display the ProductID for the product that has been 
 --    sold the most (highest total quantity across all
 --    transactions). 
-SELECT MAX(COUNT(product.productid))
-FROM product;
+select 10;
 
 
 -- 11 Rewrite query 30 in chapter 5 using a join.
