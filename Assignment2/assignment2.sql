@@ -47,7 +47,7 @@ SELECT vendor.vendorid, vendor.vendorname, SUM(includes.quantity*product.product
 --    of the cheapest product.
 SELECT product.productid, product.productname, product.productprice
    FROM product 
-   WHERE product.productprice = (SELECT MIN(product.productprice) FROM product)
+   WHERE product.productprice = (SELECT MIN(product.productprice) FROM product);
 
 -- 8 Display the ProductID, Productname and VendorName
 --    for products whose price is below average price of all products
