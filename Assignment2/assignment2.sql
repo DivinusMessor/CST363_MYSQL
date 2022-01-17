@@ -11,19 +11,18 @@ SELECT region.regionid, region.regionname, COUNT(store.storeid)
 
 -- 2 Display CategoryID and average price of products in that category.
 --   Use the ROUND function to show 2 digits after decimal point in average price.
-SELECT category.categoryid, ROUND(AVG(product.productprice), 2)
-   FROM product JOIN category ON product.categoryid = category.categoryid
-   GROUP BY category.categoryid;
+SELECT product.categoryid, ROUND(AVG(product.productprice), 2) as AVGPrice
+   FROM product
+   GROUP BY product.categoryid;
 
 -- 3 Display CategoryID and number of items purchased in that category. 
-"Do we check the number of products or the quanity?"
-SELECT category.categoryid, COUNT(product.productname)
+SELECT category.categoryid, SUM(includes.quantity)
    FROM product JOIN category ON product.categoryid = category.categoryid
    JOIN includes ON product.productid = includes.productid
    GROUP BY category.categoryid;
 
 -- 4 Display RegionID, RegionName and total amount of sales as "AmountSpent"
-SELECT region.regionid, region.regionname, SUM(product.productprice) as AmountSpent
+SELECT region.regionid, region.regionname, SUM(product.productprice * includes.quantity) as AmountSpent
    FROM product JOIN includes ON product.productid = includes.productid
    JOIN salestransaction ON includes.tid = salestransaction.tid 
    JOIN store ON salestransaction.storeid = store.storeid
@@ -32,18 +31,17 @@ SELECT region.regionid, region.regionname, SUM(product.productprice) as AmountSp
 
 -- 5 Display the TID and total number of items in the sale
 --    for all sales where the total number of items is greater than 3
-SELECT salestransaction.tid, COUNT(salestransaction.tid)
-   FROM product JOIN includes ON product.productid = includes.productid
-   JOIN salestransaction ON includes.tid = salestransaction.tid
-   GROUP BY salestransaction.tid
-   HAVING COUNT(salestransaction.tid) > 3;
+SELECT includes.tid, SUM(includes.quantity)
+   FROM includes 
+   GROUP BY includes.tid
+   HAVING SUM(includes.quantity) > 3;
 
 -- 6 For vendor whose product sales exceeds $700, display the
 --    VendorID, VendorName and total amount of sales as "TotalSales"
-SELECT vendor.vendorid, vendor.vendorname, CONCAT("$", SUM(product.productprice)) AS TotalSales
-   FROM vendor JOIN product ON vendor.vendorid = product.vendorid
-   GROUP BY vendorname
-   HAVING SUM(product.productprice) > 700;
+SELECT vendor.vendorid, vendor.vendorname, SUM(includes.quantity*product.productprice) AS TotalSales
+   FROM product NATURAL JOIN vendor NATURAL JOIN includes
+   GROUP BY vendor.vendorid
+   HAVING TotalSales > 700;
 
 -- 7 Display the ProductID, Productname and ProductPrice
 --    of the cheapest product.
@@ -53,48 +51,39 @@ SELECT product.productid, product.productname, product.productprice
 
 -- 8 Display the ProductID, Productname and VendorName
 --    for products whose price is below average price of all products
---    sorted by productid. -- CHECK need to redo 
+--    sorted by productid. 
 SELECT product.productid, product.productname, vendor.vendorname
-   FROM product JOIN vendor ON product.vendorid = vendor.vendorid;
-   WHERE product.productprice < (SELECT AVG(product.productprice) FROM product);
+   FROM product NATURAL JOIN vendor
+   WHERE product.productprice < (SELECT AVG(product.productprice) FROM product)
+   ORDER BY product.productid;
 
 -- 9 Display the ProductID and Productname from products that
 --    have sold more than 2 (total quantity).  Sort by ProductID
-"Check this to see if it is good"
-SELECT product.productid, product.productname, includes.quantity
-   FROM product JOIN includes ON product.productid = includes.productid
-   WHERE SUM(includes.quantity) > 2
+SELECT product.productid, product.productname
+   FROM product NATURAL JOIN includes
    GROUP BY product.productid
-   ORDER BY product.productid;
+   HAVING SUM(includes.quantity) > 2;
 
 -- 10 Display the ProductID for the product that has been 
 --    sold the most (highest total quantity across all
 --    transactions). 
-"Check"
-SELECT includes.productid
-   FROM includes
-   WHERE includes.quantity = (SELECT MAX(quantity) FROM includes);
-
+WITH temp AS (SELECT productid, sum(quantity) AS total_quantity 
+   FROM includes GROUP BY productid), temp1 AS 
+   (SELECT max(total_quantity) AS max_total_quantity FROM temp) 
+   SELECT productid FROM temp WHERE total_quantity = (SELECT max_total_quantity FROM temp1);
 
 -- 11 Rewrite query 30 in chapter 5 using a join.
 SELECT product.productid, product.productname, product.productprice
-FROM product INNER JOIN includes ON product.productid = includes.productid
-GROUP BY product.productid 
-HAVING SUM(includes.quantity) > 3;
+   FROM product INNER JOIN includes ON product.productid = includes.productid
+   GROUP BY product.productid 
+   HAVING SUM(includes.quantity) > 3;
 
 -- 12 Rewrite query 31 using a join.
-SELECT product.productid, product.productname, product.productprice, includes.tid
-FROM product JOIN includes ON product.productid = includes.productid 
-WHERE product.productid 
-
-"Book example"
 SELECT product.productid, product.productname, product.productprice
-FROM product 
-WHERE product.productid IN 
-(SELECT includes.productid
-FROM includes 
-GROUP BY includes.productid
-HAVING COUNT(includes.tid) > 1);
+   FROM product JOIN includes ON product.productid = includes.productid 
+   WHERE product.productid
+   GROUP BY includes.productid
+   HAVING COUNT(includes.tid) > 1;
 
 -- 13 create a view over the product, salestransaction, includes, customer, store, region tables
 --     with columns: tdate, productid, productname, productprice, quantity, customerid, customername, 
