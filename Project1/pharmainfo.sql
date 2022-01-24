@@ -180,9 +180,9 @@ INSERT INTO doctors VALUES ('222114449', 'Marxwell Houston', 'Heart', 1);
 INSERT INTO doctors VALUES ('222113349', 'Hos Gun', 'Brain', 4);
 
 INSERT INTO patient VALUES ('111223333', 'Bob Zager', 56, '311 Mulberry Road', '222114444'); 
-INSERT INTO patient VALUES ('333112222', 'Ada Wong', 21, '215 Help Street', '222115555');
-INSERT INTO patient VALUES ('333112229', 'Norma City', 27, '123 myname Street', '222113333');
-INSERT INTO patient VALUES ('223112229', 'Gram Steph', 17, '215 hrash Street', '222110000');
+INSERT INTO patient VALUES ('333112222', 'Ada Wong', 21, '215 Help Street', '222114449');
+INSERT INTO patient VALUES ('333112229', 'Norma City', 27, '123 myname Street', '222114449');
+INSERT INTO patient VALUES ('223112229', 'Gram Steph', 17, '215 hrash Street', '222113349');
 
 INSERT INTO company VALUES ('Bobs Meds', '5551112222');
 
