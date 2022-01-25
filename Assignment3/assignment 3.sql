@@ -5,27 +5,42 @@
 --    manufacturer B?  The result should be in order by model number and 
 --    then by  price (low to high)  
 --     hint:  use a union over the pc, laptop and printer tables
-select 1;
+SELECT model, price FROM laptop NATURAL JOIN product WHERE maker = 'B'
+   UNION SELECT model, price FROM pc NATURAL JOIN product WHERE maker = 'B'
+   UNION SELECT model, price FROM printer NATURAL JOIN product WHERE maker = 'B'
+   ORDER BY model, price;
 
 -- 2  Find those manufacturers that sell laptops but not pc’s. 
 --    Sort result by maker.
 --    hint: use "not in" predicate and a subselect on the pc table.
-select 2;
+SELECT * FROM product
+   WHERE model NOT IN ( SELECT model FROM product WHERE type IN ('pc')); -- check
 
 -- 3  Find the hard-drive sizes that occur in two or more PC’s.   
 --    Sort the list low to high. [hint: use group and having]
-select 3; 
+SELECT hd FROM pc
+   GROUP BY hd
+   HAVING COUNT(hd) >= 2
+   ORDER BY hd;
 
 -- 4  Find  PC models that have both the same speed and RAM.  The
 --    output should have 2 columns,  "model1" and "model2".  A pair should be
 --    listed only once:  e.g. if (f, g) is in the result then (g,f) should not
 --    appear.   Sort the output by the first column.
-select 4; 
+SELECT model1.model AS modela, model2.model AS modelb
+   FROM pc model1 JOIN pc model2 ON model1.speed = model2.speed 
+   AND model1.ram = model2.ram 
+   AND model1.model > model2.model
+   ORDER BY modela;
  
 -- 5  Find the maker or makers of PC’s with at least three different speeds. 
 --    If more than one, order by maker.
 --    hint: use a having clause containing a count(distinct   ) function.
-select 5;
+SELECT maker
+	FROM product NATURAL JOIN pc 
+	GROUP BY maker
+	HAVING COUNT(DISTINCT pc.speed) >= 3
+    ORDER BY maker;
 
 -- 6  Find those makers of at least two different computers (PC’s or 
 --    laptops)  with speeds of at least 2.80.  Order the list by maker. 
