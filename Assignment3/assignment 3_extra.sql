@@ -13,8 +13,13 @@ SELECT model, price FROM laptop NATURAL JOIN product WHERE maker = 'B'
 -- 2  Find those manufacturers that sell laptops but not pc’s. 
 --    Sort result by maker.
 --    hint: use "not in" predicate and a subselect on the pc table.
-SELECT * FROM product
-   WHERE model NOT IN ( SELECT model FROM product WHERE type IN ('pc')); -- check
+SELECT DISTINCT maker 
+	FROM product
+    WHERE maker NOT IN (SELECT maker FROM product WHERE type = 'pc')
+    AND product.type = 'laptop'
+    ORDER BY maker;
+
+
 
 -- 3  Find the hard-drive sizes that occur in two or more PC’s.   
 --    Sort the list low to high. [hint: use group and having]
