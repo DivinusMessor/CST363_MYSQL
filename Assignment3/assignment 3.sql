@@ -50,7 +50,7 @@ SELECT maker
 --    hint:  use a subquery that does a UNION of the pc and laptop tables.
 SELECT maker FROM 
 	(SELECT product.maker, pc.model FROM pc JOIN product on product.model = pc.model 
-	WHERE pc.speed < 2.80 
+	WHERE pc.speed >= 2.80 
 UNION 
 	SELECT product.maker, laptop.model
     FROM laptop JOIN product ON product.model = laptop.model
@@ -61,4 +61,11 @@ ORDER BY maker;
 
 -- 7  Find the maker(s) of the computer (PC or laptop) with the highest 
 --    speed.  If there are multiple makers, list all of them and order by maker.
-select 7; 
+SELECT maker 
+	FROM pc NATURAL JOIN product 
+	WHERE pc.speed = (SELECT MAX(speed) FROM (SELECT speed FROM laptop UNION SELECT speed FROM pc) AS pcfast)
+UNION 
+	SELECT maker
+		FROM laptop NATURAL JOIN product
+        WHERE laptop.speed = (SELECT MAX(speed) FROM (SELECT speed FROM laptop UNION SELECT speed FROM pc) AS laspfast)
+ORDER BY maker;
