@@ -48,7 +48,16 @@ SELECT maker
 -- 6  Find those makers of at least two different computers (PC’s or 
 --    laptops)  with speeds of at least 2.80.  Order the list by maker. 
 --    hint:  use a subquery that does a UNION of the pc and laptop tables.
-select 6; 
+SELECT maker FROM 
+	(SELECT product.maker, pc.model FROM pc JOIN product on product.model = pc.model 
+	WHERE pc.speed < 2.80 
+UNION 
+	SELECT product.maker, laptop.model
+    FROM laptop JOIN product ON product.model = laptop.model
+    WHERE laptop.speed >= 2.80) AS makers 
+GROUP BY maker 
+HAVING COUNT(model) >= 2
+ORDER BY maker;
 
 -- 7  Find the maker(s) of the computer (PC or laptop) with the highest 
 --    speed.  If there are multiple makers, list all of them and order by maker.
