@@ -1,0 +1,14 @@
+{
+   "configurations": [
+      {
+         "type": "java",
+         "name": "Spring Boot-World<project2>",
+         "request": "launch",
+         "cwd": "${workspaceFolder}",
+         "console": "internalConsole",
+         "mainClass": "com.csumb.cst363.World",
+         "projectName": "project2",
+         "args": ""
+      }
+   ]
+}
