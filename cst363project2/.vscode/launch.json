@@ -2,6 +2,13 @@
    "configurations": [
       {
          "type": "java",
+         "name": "Launch DataGenerate",
+         "request": "launch",
+         "mainClass": "com.csumb.cst363.DataGenerate",
+         "projectName": "cst363"
+      },
+      {
+         "type": "java",
          "name": "Spring Boot-Cst363Application<cst363>",
          "request": "launch",
          "cwd": "${workspaceFolder}",
