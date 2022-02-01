@@ -36,19 +36,19 @@ SELECT manager.managerid, manager.mfname, manager.mlname, COUNT(building.buildin
    GROUP BY manager.managerid
    HAVING NumBuild > 1;
 
-
 -- 7 Display the SMemberID and SMemberName of staff members cleaning apartments 
 -- rented by corporate clients whose corporate location is Chicago. 
 -- Do not display the same information more than once.
 SELECT DISTINCT staffmember.smemberid, staffmember.smembername
-   FROM staffmember NATURAL JOIN cleaning 
+   FROM staffmember 
+   NATURAL JOIN cleaning 
    NATURAL JOIN apartment 
    NATURAL JOIN corpclient
    WHERE corpclient.cclocation = "Chicago";
 
 -- 8 Display the CCName of the client and the CCName of the client 
 -- who referred him or her, for every client referred by a client in the Music industry.
-SELECT m.ccname as Client, e.ccname AS RefferedBy
+SELECT m.ccname, e.ccname
    FROM corpclient e INNER JOIN corpclient m ON e.ccid = m.ccidreferredby
    WHERE e.ccindustry = 'Music';
 
