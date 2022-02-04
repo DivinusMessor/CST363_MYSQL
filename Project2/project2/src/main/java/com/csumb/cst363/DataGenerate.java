@@ -39,7 +39,7 @@ public class DataGenerate {
 
     	String url = "jdbc:mysql://localhost:3306/pharmacy";
         String user = "root";
-        String password = "Sultana123!";
+        String password = "1234";
     	  try (Connection con = DriverManager.getConnection(url, user, password); ) {
               con.setAutoCommit(false);
                 PreparedStatement ds = con.prepareStatement (

@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Random;
 
-public class DataGenerate {
+public class FilledPresciptionGenerate {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -117,7 +118,7 @@ public class DataGenerate {
             
             PreparedStatement dns = con.prepareStatement (
             		"insert into prescription (drug_id, quantity, prescribed_date,"
-            		+ "patientID, doctor_id) values(?,?,?,?,?)");
+            		+ "patientID, doctor_id, pharmacyID, date_filled, cost) values(?,?,?,?,?,?,?,?)");
             for (int i = 0; i < 10; i++) {
             Random numGen = new Random();
             int rxnum = numGen.nextInt(98)+1;
@@ -144,6 +145,18 @@ public class DataGenerate {
             doctorID = docRes.getString("id");
             }
             dns.setString(5, doctorID);
+         
+            int pharmId = numGen.nextInt(11);
+               if (pharmId == 0) {
+                  dns.setNull(6, Types.NULL);
+                  dns.setNull(7, Types.NULL);
+                  dns.setNull(8, Types.NULL);
+               } else {
+                  dns.setInt(6, pharmId);
+                  dns.setString(7, "" + (numGen.nextInt(13) + 2010) + "-" + (numGen.nextInt(11) + 1) + "-" + (numGen.nextInt(27) + 1));
+                  dns.setFloat(8, numGen.nextFloat());
+               }
+               
             dns.executeUpdate();
            }
             String prescStr = "select * from prescription NATURAL JOIN drug ";

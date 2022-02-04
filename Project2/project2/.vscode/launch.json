@@ -1,0 +1,14 @@
+{
+   "configurations": [
+      {
+         "type": "java",
+         "name": "Spring Boot-DataGenerate<project2>",
+         "request": "launch",
+         "cwd": "${workspaceFolder}",
+         "console": "internalConsole",
+         "mainClass": "com.csumb.cst363.DataGenerate",
+         "projectName": "project2",
+         "args": ""
+      }
+   ]
+}
