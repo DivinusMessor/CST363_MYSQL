@@ -1,15 +1,29 @@
 --
 -- Table structure for table `drug`
 --
-DROP TABLE IF EXISTS `drug`;
-CREATE TABLE `drug` (
-  `drug_id` int(11) NOT NULL,
-  `trade_name` varchar(100) DEFAULT NULL,
-  `formula` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`drug_id`)
-); 
+-- DROP TABLE IF EXISTS `drug`;
+-- CREATE TABLE `drug` (
+--   `drug_id` int(11) NOT NULL,
+--   `trade_name` varchar(100) DEFAULT NULL,
+--   `formula` varchar(200) DEFAULT NULL,
+--   PRIMARY KEY (`drug_id`)
+-- ); 
 
-INSERT INTO `drug` VALUES 
+CREATE TABLE IF NOT EXISTS `pharmacy`.`drug` (
+  `drug_id` INT(11) NOT NULL,
+  `trade_name` VARCHAR(100) DEFAULT NULL,
+  `formula` VARCHAR(200) DEFAULT NULL,
+  `companyID` INT NULL,
+  PRIMARY KEY (`drug_id`),
+  INDEX `fk_drug_company1_idx` (`companyID` ASC) VISIBLE,
+  CONSTRAINT `fk_drug_company1`
+    FOREIGN KEY (`companyID`)
+    REFERENCES `pharmacy`.`company` (`companyID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+INSERT INTO `drug` (drug_id, trade_name, formula) VALUES 
 (1,'Tylenol with Codeine','acetaminophen and codeine'),
 (2,'Proair Proventil','albuterol aerosol'),
 (3,'Accuneb','albuterol HFA'),

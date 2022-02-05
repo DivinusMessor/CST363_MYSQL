@@ -1,6 +1,7 @@
 package com.csumb.cst363;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,18 +51,54 @@ public class ControllerPatient {
 	 * Process a form to create new patient.
 	 */
 	@PostMapping("/patient/new")
-	public String newPatient(Patient p, Model model) {
-
-		// TODO
-
-		/*
-		 * Complete database logic to verify and process new patient
-		 */
+	public String newPatient(Patient patient, Model model) {
+	   
+            Doctor doctor = new Doctor();
+            
+	     try (Connection con = getConnection(); ) {
+	     
+                
+	        String Query = "insert into patient (name, birthdate, ssn, street, city, state, zipcode, primaryID) values (?,?,?,?,?,?,?,?)";
+	        String doc = "select id from doctor WHERE name = ?";
+	        PreparedStatement docFind = con.prepareStatement(doc);
+	        //PreparedStatement pat = con.prepareStatement(Query, Statement.RETURN_GENERATED_KEYS);
+	               PreparedStatement prepStatement = con.prepareStatement(Query, Statement.RETURN_GENERATED_KEYS);
+	                prepStatement.setString(1, patient.getName());
+	                prepStatement.setString(2, patient.getBirthdate());
+	                prepStatement.setString(3, patient.getSsn());
+	                prepStatement.setString(4, patient.getStreet());
+	                prepStatement.setString(5, patient.getCity());
+	                prepStatement.setString(6, patient.getState());
+	                prepStatement.setString(7, patient.getZipcode());
+//	                prepStatement.setString(8, patient.getPrimaryName());
+	                
+	                System.out.println(patient.getPrimaryName());
+	                //gets the primary name to find doc
+	                docFind.setString(1, patient.getPrimaryName());
+	                ResultSet df = docFind.executeQuery();
+	                df.next();
+	                int docID = df.getInt("id");
+	                
+	                //sets the id of the primary doc
+	                prepStatement.setInt(8, docID);
+	                prepStatement.executeUpdate();
+	                
+	                ResultSet pf = prepStatement.getGeneratedKeys();
+	                
+	                if (pf.next())
+	                {
+	                   String primaryName = pf.getString(8);
+	                   System.out.println("Primary name: " + primaryName);
+	                   
+	                }
+	        
+	             } catch (SQLException ex) {
+	                model.addAttribute("message", "SQL Error."+ex.getMessage());
+                        model.addAttribute("patient", patient);
+                        return "patient_register";       
+	             }
 		// fake data for generated patient id.
-		p.setPatientId("300198");
-		model.addAttribute("message", "Registration successful.");
-		model.addAttribute("patient", p);
-		return "patient_show";
+      return null;
 
 	}
 	

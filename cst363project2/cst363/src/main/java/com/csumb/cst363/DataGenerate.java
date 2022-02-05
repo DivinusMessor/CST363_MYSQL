@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,7 +37,7 @@ public class DataGenerate {
         		"Endocrinologists", "Family Physician", "Hematologists", "Neurologist", 
         		"Gynecologists", "Ophthalmologists", "Pediatricians", "Physiatrists"};	
 
-    	String url = "jdbc:mysql://localhost:3306/bigpharma";
+    	String url = "jdbc:mysql://localhost:3306/pharmacy";
         String user = "root";
         String password = "1234";
     	  try (Connection con = DriverManager.getConnection(url, user, password); ) {
@@ -146,8 +147,52 @@ public class DataGenerate {
             dns.setString(5, doctorID);
             dns.executeUpdate();
            }
+            Statement stmt = con.createStatement(); 
+   		 PreparedStatement pr = con.prepareStatement (
+            		"insert into prescription (drug_id, quantity, prescribed_date,"
+            		+ "patientID, doctor_id, pharmacyID, date_filled, cost) values(?,?,?,?,?,?,?,?)");
+            for (int i = 0; i < 10; i++) {
+            Random numGen = new Random();
+            int rxnum = numGen.nextInt(98)+1;
+            pr.setInt(1, rxnum);
+            
+            int quantity = numGen.nextInt(30)+1;
+            pr.setInt(2,  quantity);
+            
+            String date = ("19" + (numGen.nextInt(88) + 11)) + "-" + (numGen.nextInt(11) + 1) + "-" + (numGen.nextInt(27) + 1);
+            pr.setString(3, date);
+            
+            String pstr = "SELECT patientId FROM  patient ORDER BY RAND() LIMIT 1";
+            ResultSet grabbedRes = pr.executeQuery(pstr);
+            String patientId = "";
+            while(grabbedRes.next()) {
+            patientId = grabbedRes.getString("patientID");
+            }
+            pr.setString(4, patientId);
+            
+            String dstr = "SELECT id FROM doctor ORDER BY RAND() LIMIT 1";
+            ResultSet docRes = pr.executeQuery(dstr);
+            String doctorID = "";
+            while(docRes.next()) {
+            doctorID = docRes.getString("id");
+            }
+            pr.setString(5, doctorID);
+         
+            int pharmId = numGen.nextInt(11);
+               if (pharmId == 0) {
+                  pr.setNull(6, Types.NULL);
+                  pr.setNull(7, Types.NULL);
+                  pr.setNull(8, Types.NULL);
+               } else {
+                  pr.setInt(6, pharmId);
+                  pr.setString(7, "" + (numGen.nextInt(13) + 2010) + "-" + (numGen.nextInt(11) + 1) + "-" + (numGen.nextInt(27) + 1));
+                  pr.setFloat(8, numGen.nextFloat());
+               }
+               
+            pr.executeUpdate();
+           }
             String prescStr = "select * from prescription NATURAL JOIN drug ";
-            ResultSet presSet = dns.executeQuery(prescStr);
+            ResultSet presSet = pr.executeQuery(prescStr);
             System.out.println("\nDrug Info");
             while(presSet.next()) {
             	 System.out.println("Drug ID: " + presSet.getString("drug_id") + " Quantity: " +
@@ -155,6 +200,7 @@ public class DataGenerate {
                  " Patient ID: " + presSet.getString("patientID") + " Doctor ID: " + presSet.getString("doctor_id") + 
                 " Trade Name: " + presSet.getString("trade_name"));
             }
+            
             con.commit();
         } catch (SQLException e) {
             System.out.println("Error" + e);
@@ -167,11 +213,11 @@ public class DataGenerate {
         return toGrab[randGen.nextInt(toGrab.length)];
     }
 
-    /*
-     * return JDBC Connection using jdbcTemplate in Spring Server
-     */
-    private Connection getConnection() throws SQLException {
-        Connection conn = jdbcTemplate.getDataSource().getConnection();
-        return conn;
-    }
+//    /*
+//     * return JDBC Connection using jdbcTemplate in Spring Server
+//     */
+//    private Connection getConnection() throws SQLException {
+//        Connection conn = jdbcTemplate.getDataSource().getConnection();
+//        return conn;
+//    }
 }
