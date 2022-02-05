@@ -53,8 +53,7 @@ public class ControllerPatient {
 	@PostMapping("/patient/new")
 	public String newPatient(Patient patient, Model model) {
 	   
-            Doctor doctor = new Doctor();
-            
+          
 	     try (Connection con = getConnection(); ) {
 	     
                 
@@ -70,36 +69,34 @@ public class ControllerPatient {
 	                prepStatement.setString(5, patient.getCity());
 	                prepStatement.setString(6, patient.getState());
 	                prepStatement.setString(7, patient.getZipcode());
+	                docFind.setString(1,  patient.getPrimaryName());
 //	                prepStatement.setString(8, patient.getPrimaryName());
 	                
 	                System.out.println(patient.getPrimaryName());
-	                //gets the primary name to find doc
-	                docFind.setString(1, patient.getPrimaryName());
-	                ResultSet df = docFind.executeQuery();
-	                df.next();
-	                int docID = df.getInt("id");
+	                ResultSet res = docFind.executeQuery();
+		            while(res.next()) {
+		            	prepStatement.setString(8, res.getString("id"));
+		            }
 	                
 	                //sets the id of the primary doc
-	                prepStatement.setInt(8, docID);
+	               // prepStatement.setInt(8, docID);
 	                prepStatement.executeUpdate();
 	                
 	                ResultSet pf = prepStatement.getGeneratedKeys();
-	                
 	                if (pf.next())
 	                {
-	                   String primaryName = pf.getString(8);
-	                   System.out.println("Primary name: " + primaryName);
-	                   
+	                
+	                   patient.setPatientId(pf.getString(1));
+//	                   String primaryName = pf.getString(8);
+//	                   System.out.println("Primary name: " + primaryName);
 	                }
-	        
+	                model.addAttribute("patient", patient);
+	                return "patient_show";
 	             } catch (SQLException ex) {
 	                model.addAttribute("message", "SQL Error."+ex.getMessage());
                         model.addAttribute("patient", patient);
                         return "patient_register";       
 	             }
-		// fake data for generated patient id.
-      return null;
-
 	}
 	
 	/*
@@ -108,30 +105,48 @@ public class ControllerPatient {
 	@PostMapping("/patient/show")
 	public String getPatientForm(@RequestParam("patientId") String patientId, @RequestParam("name") String name,
 			Model model) {
+        Patient patient = new Patient();
 
-		// TODO
+        try (Connection con = getConnection();) {
+            
+            System.out.println("start getPatient " + name); // for DEBUG
 
-		/*
-		 * code to search for patient by id and name retrieve patient data and primary
-		 * doctor data create Patient object
-		 */
-		
-		// return fake data for now.
-		Patient p = new Patient();
-		p.setPatientId(patientId);
-		p.setName(name);
-		p.setBirthdate("2001-01-01");
-		p.setStreet("123 Main");
-		p.setCity("SunCity");
-		p.setState("CA");
-		p.setZipcode("99999");
-		p.setPrimaryID(11111);
-		p.setPrimaryName("Dr. Watson");
-		p.setSpecialty("Family Medicine");
-		p.setYears("1992");
+            PreparedStatement ps = con
+                    .prepareStatement("SELECT p.birthdate, p.ssn, p.street, p.city, p.state, p.zipcode, p.primaryID, d.name FROM patient p INNER JOIN doctor d ON p.primaryID=d.id where p.patientID=? AND p.name=?");
+            // Set the Query vals w the given params
+            ps.setString(1, patientId); 
+            ps.setString(2, name);
+            // Create a new patient obj to display
 
-		model.addAttribute("patient", p);
-		return "patient_show";
+            // Run the query & then process the results
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) { // Case for found Patient
+                // Bulk of sets from the given query results
+                patient.setPatientId(patientId);
+                patient.setName(name);
+                patient.setBirthdate(rs.getString(1));
+                patient.setSsn(rs.getString(2));
+                patient.setStreet(rs.getString(3));
+                patient.setCity(rs.getString(4));
+                patient.setState(rs.getString(5));
+                patient.setZipcode(rs.getString(6));
+                patient.setPrimaryID(rs.getInt(7));
+                patient.setPrimaryName(rs.getString(8));
+
+                // Update model, debug log, then return out.
+                model.addAttribute("patient", patient);
+                System.out.println("end getPatient " + patient); // for DEBUG
+                return "patient_show";
+            } else { // Case for nothing found
+                model.addAttribute("message", "Patient not found.");
+                return "patient_get";
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error in getPatient " + e.getMessage());
+            model.addAttribute("message", "SQL Error." + e.getMessage());
+            model.addAttribute("patient", patient);
+            return "patient_get";
+        }
 	}
 
 	/*
@@ -139,25 +154,49 @@ public class ControllerPatient {
 	 */
 	@GetMapping("/patient/edit/{patientId}")
 	public String updatePatient(@PathVariable String patientId, Model model) {
+		Patient patient = new Patient();
 
-		// TODO Complete database logic search for patient by id.
+        try (Connection con = getConnection();) {
+            
 
-		// return fake data for now.
-		Patient p = new Patient();
-		p.setPatientId(patientId);
-		p.setName("Alex Patient");
-		p.setBirthdate("2001-01-01");
-		p.setStreet("123 Main");
-		p.setCity("SunCity");
-		p.setState("CA");
-		p.setZipcode("99999");
-		p.setPrimaryID(11111);
-		p.setPrimaryName("Dr. Watson");
-		p.setSpecialty("Family Medicine");
-		p.setYears("1992");
+            PreparedStatement ps = con
+                    .prepareStatement("SELECT p.birthdate, p.ssn, p.street, p.city, p.state, p.zipcode, p.primaryID, d.name, p.name, d.specialty, d.practice_since_year FROM patient p INNER JOIN doctor d ON p.primaryID=d.id where p.patientID=?");
+            // Set the Query vals w the given params
+            ps.setString(1, patientId); 
+            // Create a new patient obj to display
 
-		model.addAttribute("patient", p);
-		return "patient_edit";
+            // Run the query & then process the results
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) { // Case for found Patient
+                // Bulk of sets from the given query results
+                patient.setPatientId(patientId);
+                patient.setBirthdate(rs.getString(1));
+                patient.setSsn(rs.getString(2));
+                patient.setStreet(rs.getString(3));
+                patient.setCity(rs.getString(4));
+                patient.setState(rs.getString(5));
+                patient.setZipcode(rs.getString(6));
+                patient.setPrimaryID(rs.getInt(7));
+                patient.setPrimaryName(rs.getString(8));
+                patient.setName(rs.getString(9));
+                patient.setSpecialty(rs.getString(10));
+                patient.setYears(rs.getString(11));
+
+                
+                // Update model, debug log, then return out.
+                model.addAttribute("patient", patient);
+                System.out.println("end getPatient " + patient); // for DEBUG
+                return "patient_edit";
+            } else { // Case for nothing found
+                model.addAttribute("message", "Patient not found. ");
+                return "patient_get";
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error in getPatient " + e.getMessage());
+            model.addAttribute("message", "SQL Error." + e.getMessage());
+            model.addAttribute("patient", patient);
+            return "patient_get";
+        }
 	}
 	
 	
@@ -166,11 +205,35 @@ public class ControllerPatient {
 	 */
 	@PostMapping("/patient/edit")
 	public String updatePatient(Patient p, Model model) {
-
 		// TODO
-
+        System.out.println(p);
+		  try (Connection con = getConnection();) {
+	            
+		        String doc = "select id from doctor WHERE name = ?";
+	              PreparedStatement stmt = con.prepareStatement(doc);
+	            PreparedStatement ps = con
+	                    .prepareStatement("UPDATE patient SET street=?, city=?, state=?, zipcode=?, primaryID=? WHERE patientID=?");
+	            ps.setString(1, p.getStreet());
+	            ps.setString(2, p.getCity());
+	            ps.setString(3, p.getState());
+	            ps.setString(4,  p.getZipcode());
+	            ps.setString(6, p.getPatientId());
+	            stmt.setString(1, p.getPrimaryName());
+	            
+	            ResultSet res = stmt.executeQuery();
+	            while(res.next()) {
+	            	ps.setString(5, res.getString("id"));
+	            }
+	            ps.executeUpdate();
+	            
+		  }catch (SQLException e) {
+	            System.out.println("SQL error in getPatient " + e.getMessage());
+	            model.addAttribute("message", "SQL Error." + e.getMessage());
+	            model.addAttribute("patient", p);
+	            return "patient_get";
+	        }
 		/*
-		 * validate primary doctor name and other data update databaser
+		 * validate primary doctor name and other data update database
 		 */
 
 		model.addAttribute("patient", p);

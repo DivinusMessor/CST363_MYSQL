@@ -19,28 +19,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.Random;
 
 public class DataGenerate {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     public static void main(String[] args) {
-        String[] firstNames = {"Bob", "Ryan", "Ellis", "Joe", "Stan", "Pam","Gunter", "Jackie", "Cyrus", "Walter"};
-        String[] lastNames = {"Magee", "Smith", "Jackson", "Anderson", "Caroll", "Coates", "Carr", "Timm", "Jacobs", "Wilson"};
-        String[] streets = {"Deercove Dr", "Fincham Road", "Bartlett Ave", "Roosevelt Road", "Bombadier Way", "Fittro Street", "Elkview Drive", "Milford Street", "Waldeck Street", "Fieldcrest Road"};
-        String[] cities = {"Houston", "Waseca", "Salinas", "Carmel", "Stamford", "La Grange", "Somers", "Brooklyn", "Fort Worth", "Chicago"};
-        String[] states = {"California", "Nevada", "New York", "Oregon", "Washington"};
-        String[] doctorFirstName = {"Lacie", "Ellesse", "Saqib", "Forrest", "Roma", "Ihsan", "Bill", "Yasmin",
-        		"Nicolas", "Veer", "Bob", "Ryan", "Ellis", "Joe", "Stan", "Pam","Gunter", "Jackie", "Cyrus", "Walter"};
-        String[] doctorLastName = {"Andrews", "Paul", "Cardenas", "Oconnell", "Salter", "Britt", "Martinez", "Hills", "Alfaro", "Frye", 
-        		"Magee", "Smith", "Jackson", "Anderson", "Caroll", "Coates", "Carr", "Timm", "Jacobs", "Wilson"};
-        String[] doctorSpecialty = {"Allergists" ,"Anesthesiologists" , "Cardiologists", "Dermatologists", 
-        		"Endocrinologists", "Family Physician", "Hematologists", "Neurologist", 
-        		"Gynecologists", "Ophthalmologists", "Pediatricians", "Physiatrists"};	
+        // List of random names/items for array
+        String[] firstNames = {"Mark", "Ross", "Manny", "Josh", "Gilbert", "Michelle","Danita", "Gail", "Lawanda", "Quoc"};
+        String[] lastNames = {"Vo", "Lopez", "Nguyen", "Patterson", "Noble", "Coltz", "Kar", "Filtz", "Shwartz", "Sauter"};
+        String[] streets = {"Apple Dr", "17th Street", "Mona Blvrd", "Largo", "Watts", "Rosevelt Dr", "Brommer St", "Wala Street", "Decker Street", "Fredrick Road"};
+        String[] cities = {"Santa Cruz", "Compton", "Lynwood", "Lakewood", "Santa Clara", "Padadena", "Scranton", "Brooklyn", "Foxhole", "New York"};
+        String[] states = {"California", "Utah", "Florida", "New Jersey", "Texas"};
+        String[] doctorFirstName = {"Weinstein", "Chagi", "Nair", "Bong", "Mitsunaga", "Chen", "Javier", "Yasmin",
+        		"George", "Chris", "Louie", "David", "Eli", "Ernesto", "Laura", "Terri", "Ale", "Ahri", "Malz", "Patty"};
+        String[] doctorLastName = {"Champlin", "Oswald", "Cardenas", "Lopez", "Chavez", "Johnson", "Gunter", "Huges", "Alfonzo", "Candice", 
+        		"Guzman", "Aguilar", "Mazar", "Cassada", "Peterson", "Kelp", "Sato", "Tanaka", "Suzuki", "Wander"};
+        String[] doctorSpecialty = {"Cardiologists", "Dermatologists", 
+        		"Internal Medicine", "Family Physician", "Pediatricians", "Physiatrists"};	
 
     	String url = "jdbc:mysql://localhost:3306/pharmacy";
         String user = "root";
-        String password = "1234";
-    	  try (Connection con = DriverManager.getConnection(url, user, password); ) {
+        String pw = "1234";
+    	  try (Connection con = DriverManager.getConnection(url, user, pw); ) {
               con.setAutoCommit(false);
                 PreparedStatement ds = con.prepareStatement (
               		"insert into doctor(ssn, name, specialty, practice_since_year) values( ?, ?, ?, ?)");     
@@ -61,14 +57,7 @@ public class DataGenerate {
                 ds.executeUpdate();
 
               	}
-              	String doctorInfo = "select * from doctor";
-              	ResultSet drSet = ds.executeQuery(doctorInfo);
-              	System.out.println("\nDoctor's Info");
-              	while(drSet.next()) {
-              		System.out.println(drSet.getInt("id") + ", " + drSet.getString("ssn") + ", " + 
-              	drSet.getString("name") + ", " + drSet.getString("specialty") 
-              	+ ", " + drSet.getString("practice_since_year"));
-              	}
+                System.out.println("Doctors have finished generating.");
               
               PreparedStatement ps = con.prepareStatement(
                     "insert into patient (name, birthdate, ssn, street, city, state, zipcode, primaryID) values(?, ?, ?, ?, ?, ?, ?, ?)");
@@ -77,8 +66,9 @@ public class DataGenerate {
                 ps.setString(1, fullName);
 
                 Random dateGen = new Random();
-                String birthdate = "19" + (dateGen.nextInt(88) + 11) + "-" + (dateGen.nextInt(11) + 1) + "-" + (dateGen.nextInt(27) + 1);
-                ps.setString(2, birthdate);
+                String birthyear = "" + (dateGen.nextInt(51) + 1970);
+                String birthmonths = "-" + (dateGen.nextInt(12) + 1) + "-" + (dateGen.nextInt(27) + 1);
+                ps.setString(2, birthyear + birthmonths);
 
                 ps.setString(3, "" + (dateGen.nextInt(888888888) + 111111111));
 
@@ -92,8 +82,14 @@ public class DataGenerate {
                 ps.setString(6, wholeState);
                 String zipcode = (""+dateGen.nextInt(88888) + 11111);
                 ps.setString(7, zipcode);
+
+                String str = "";
+                if (Integer.parseInt(birthyear) > 2006) {
+                    str = "SELECT id FROM doctor WHERE specialty = 'Pediatricians' ORDER BY RAND() LIMIT 1";
+                } else {
+                    str = "SELECT id FROM doctor WHERE specialty = 'Family Physician' OR specialty = 'Internal Medicine' ORDER BY RAND() LIMIT 1";
+                }
                 
-                String str = "SELECT id FROM doctor ORDER BY RAND() LIMIT 1";
                 ResultSet grabbedRes = ps.executeQuery(str);
                 String doctorID = "";
                 while(grabbedRes.next()) {
@@ -104,16 +100,7 @@ public class DataGenerate {
                 ps.executeUpdate();
             }
             
-            String str = "select * from patient";
-            ResultSet rset = ps.executeQuery(str);
-            System.out.println("\nPatient's Info");
-            while(rset.next()) {
-            	 System.out.println(rset.getString("name") + ", " +
-                 rset.getString("birthdate") + ", " + rset.getString("ssn") + 
-                 ", " + rset.getString("street") + ", " + rset.getString("city") + 
-                 ", " + rset.getString("state") + ", " + rset.getString("zipcode") + 
-                 ", " + rset.getInt("primaryID"));
-            }
+            System.out.println("Patients have finished generating.");
             
             
             PreparedStatement dns = con.prepareStatement (
@@ -191,15 +178,7 @@ public class DataGenerate {
                
             pr.executeUpdate();
            }
-            String prescStr = "select * from prescription NATURAL JOIN drug ";
-            ResultSet presSet = pr.executeQuery(prescStr);
-            System.out.println("\nDrug Info");
-            while(presSet.next()) {
-            	 System.out.println("Drug ID: " + presSet.getString("drug_id") + " Quantity: " +
-                 presSet.getString("quantity") + " Date Prescribed: " + presSet.getString("prescribed_date") + 
-                 " Patient ID: " + presSet.getString("patientID") + " Doctor ID: " + presSet.getString("doctor_id") + 
-                " Trade Name: " + presSet.getString("trade_name"));
-            }
+            System.out.println("Prescriptions have finished generating.");
             
             con.commit();
         } catch (SQLException e) {
@@ -207,17 +186,16 @@ public class DataGenerate {
         }
     }
 
+    /**
+     * getRand: Given an array, generates a random index 
+     * and returns the item inside back.
+     * 
+     * @param toGrab the given array
+     * @return a random item
+     */
     private static String getRand(String[] toGrab) {
         Random randGen = new Random();
 
         return toGrab[randGen.nextInt(toGrab.length)];
     }
-
-//    /*
-//     * return JDBC Connection using jdbcTemplate in Spring Server
-//     */
-//    private Connection getConnection() throws SQLException {
-//        Connection conn = jdbcTemplate.getDataSource().getConnection();
-//        return conn;
-//    }
 }
