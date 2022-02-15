@@ -52,8 +52,37 @@ public class ControllerPatient {
 	 */
 	@PostMapping("/patient/new")
 	public String newPatient(Patient patient, Model model) {
-	   
-          
+	   if(patient.getStreet() == null || patient.getStreet().isEmpty())
+	   {
+		   model.addAttribute("message", "Invalid street info");
+           return "patient_register";       
+	   }
+	   else if(patient.getCity() == null || patient.getCity().isEmpty() || !patient.getCity().matches("[a-zA-Z]+"))
+	   {
+		   model.addAttribute("message", "Invalid city info");
+		   return "patient_register";
+	   }
+	   else if(patient.getState() == null || patient.getState().isEmpty() || !patient.getState().matches("[a-zA-Z]+")) 
+	   {
+		   model.addAttribute("message", "Invalid state info");
+		   return "patient_register";
+	   }
+	   else if(patient.getName() == null || patient.getName().isEmpty() || !patient.getName().matches("[a-zA-Z]+"))
+	   {
+		   model.addAttribute("message", "Invalid name info");
+           return "patient_register";       
+	   }
+	   else if(patient.getZipcode() == null || patient.getZipcode().isEmpty() || patient.getZipcode().length()!=5)
+	   {
+		   model.addAttribute("message", "Invalid zipcode info");
+           return "patient_register";       
+	   }
+	   else if(Integer.valueOf(patient.getBirthdate().substring(0,4)) <= 1900|| (Integer.valueOf(patient.getBirthdate().substring(0,4)) >= 2022))
+	   {
+		   model.addAttribute("message", "Invalid year info");
+           return "patient_register";  
+	   }
+	   else {
 	     try (Connection con = getConnection(); ) {
 	     
                 
@@ -97,6 +126,7 @@ public class ControllerPatient {
                         model.addAttribute("patient", patient);
                         return "patient_register";       
 	             }
+	   }
 	}
 	
 	/*
@@ -155,7 +185,7 @@ public class ControllerPatient {
 	@GetMapping("/patient/edit/{patientId}")
 	public String updatePatient(@PathVariable String patientId, Model model) {
 		Patient patient = new Patient();
-
+		 
         try (Connection con = getConnection();) {
             
 
@@ -206,6 +236,37 @@ public class ControllerPatient {
 	@PostMapping("/patient/edit")
 	public String updatePatient(Patient p, Model model) {
 		// TODO
+		 if(p.getStreet() == null || p.getStreet().isEmpty())
+		   {
+			   model.addAttribute("message", "Invalid street info");
+	           return "patient_register";       
+		   }
+		   else if(p.getState() == null || p.getState().isEmpty() || !p.getState().matches("[a-zA-Z]+"))
+		   {
+			   model.addAttribute("message", "Invalid state info");
+			   return "patient_register";
+		   }
+		   else if(p.getCity() == null || p.getCity().isEmpty() || !p.getCity().matches("[a-zA-Z]+"))
+		   {
+			   model.addAttribute("message", "Invalid city info");
+	           return "patient_register";       
+		   }
+		   else if(p.getName() == null || p.getName().isEmpty() || !p.getName().matches("[a-zA-Z]+"))
+		   {
+			   model.addAttribute("message", "Invalid name info");
+	           return "patient_register";       
+		   }
+		   else if(p.getZipcode() == null || p.getZipcode().isEmpty() || p.getZipcode().length() != 5)
+		   {
+			   model.addAttribute("message", "Invalid zipcode info");
+	           return "patient_register";       
+		   }
+		   else if(Integer.valueOf(p.getBirthdate().substring(0,4)) <= 1900|| (Integer.valueOf(p.getBirthdate().substring(0,4)) >= 2022))
+		   {
+			   model.addAttribute("message", "Invalid year info");
+	           return "patient_register";  
+		   }
+		   else {
         System.out.println(p);
 		  try (Connection con = getConnection();) {
 	            
@@ -232,6 +293,7 @@ public class ControllerPatient {
 	            model.addAttribute("patient", p);
 	            return "patient_get";
 	        }
+		   }
 		/*
 		 * validate primary doctor name and other data update database
 		 */

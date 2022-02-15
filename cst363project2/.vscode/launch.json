@@ -2,6 +2,13 @@
    "configurations": [
       {
          "type": "java",
+         "name": "Launch ManagerReport",
+         "request": "launch",
+         "mainClass": "com.csumb.cst363.ManagerReport",
+         "projectName": "cst363"
+      },
+      {
+         "type": "java",
          "name": "Launch FilledPresciptionGenerate",
          "request": "launch",
          "mainClass": "com.csumb.cst363.FilledPresciptionGenerate",

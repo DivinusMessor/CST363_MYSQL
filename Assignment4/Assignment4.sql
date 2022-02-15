@@ -1,18 +1,14 @@
 drop table candidate;
 drop table contribution;
 drop table contributor;
--- -----------------------------------------------------
--- Table `campaign`.`candidate`
--- -----------------------------------------------------
+drop view vcampaign;
+
 CREATE TABLE IF NOT EXISTS `campaign`.`candidate` (
   `cand_id` VARCHAR(12),
   `cand_nm` VARCHAR(50),
   PRIMARY KEY (`cand_id`));
 
 
--- -----------------------------------------------------
--- Table `campaign`.`contributor`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `campaign`.`contributor` (
   `contrbr_id` INT AUTO_INCREMENT,
   `contbr_nm` VARCHAR(50),
@@ -24,10 +20,6 @@ CREATE TABLE IF NOT EXISTS `campaign`.`contributor` (
   PRIMARY KEY (`contrbr_id`));
 
 
-
--- -----------------------------------------------------
--- Table `campaign`.`contribution`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `campaign`.`contribution` (
   `contbr_id` INT AUTO_INCREMENT,
   `contrbr_id` INT,
@@ -70,10 +62,15 @@ ADD CONSTRAINT FK_contrbr_id FOREIGN KEY (contrbr_id) REFERENCES contributor(con
 ADD CONSTRAINT FK_cand_id FOREIGN KEY (cand_id) REFERENCES candidate(cand_id);
 
 select * from contribution;
-drop table vcampaign;
+
 select * from vcampaign;
 
-CREATE VIEW view_campaign AS 
+CREATE VIEW vcampaign AS 
 SELECT candidate.cand_id, candidate.cand_nm, contbr_nm, contbr_city, contbr_st, contbr_zip, contbr_employer, contbr_occupation, contb_receipt_amt, contb_receipt_dt
 FROM candidate JOIN contribution ON candidate.cand_id = contribution.cand_id
 JOIN contributor ON contributor.contrbr_id = contribution.contrbr_id;
+
+SELECT count(*) from view_campaign;
+
+-- query plan excerise 
+select * from vcampaign where contbr_zip = '92653'; 
