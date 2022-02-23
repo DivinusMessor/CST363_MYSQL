@@ -1,0 +1,70 @@
+The exam has about 34 questions that cover all topics in this course.  There are 10 questions on SQL that require you to use the WORLD database in MySQL.  If you don't have this database on your system,  download and run the world-schema.sql from here Course Resources
+
+Review these topics for the final exam
+
+SQL
+know how to code seleect including subqueries,  grouping,  order by. 
+
+know how to code a create table statements
+
+
+ER design
+how to identify a 1:Many and Many:Many relationship in a ER diagram 
+
+How to translate entity attributes and relationship attributes in an ER diagram into SQL create table statements.
+
+Given a table definition,  how to check for normal form and fix any problems by splitting the table into multiple tables
+
+
+JDBC coding
+know how to code prepared statements, use results sets to retrieve data values, and commit a transaction.
+
+know to code setAutoCommit to use multi statement transactions
+
+
+Disk architecture: 
+know what access time and data transfer time are 
+
+what is the difference between doing 100 random read operations versus 100 sequential read operations.  which one will be faster?  and why?
+
+
+Index
+review B+ Tree visualization exercise from week 5.  How is the B+ Tree searched to lookup a key value?
+
+Transactions (review slides from week 5)
+
+What do the letters ACID mean.
+
+How do you start, end, and abort a transaction when coding in Java using JDBC
+
+
+Concurrency -- review slides from week 5
+Be able to describe how the concurrency problems of lost update, inconsistent read, inconsistent write and phantoms come about
+
+Know about S and X locks and which locks are compatible and which locks require a requester to wait
+
+Know about the different isolation levels:  Read Committed, Repeatable Read and Serializable  in terms of lock usage and which concurrency problems are solved and not solved by each level 
+
+
+Snapshot isolation -- review assignment from week 5 
+NoSQL  - review slides from week 6  
+
+Know about Replication and leader, follower and which one are write requests directed to, and which one are read requests directed to
+
+Know about partitioning of databases and partitioning by key hash value and by key range.
+
+What is wrong with the SQL data model of tables with rows and columns that make companies use a NoSQL database instead?
+
+map/reduce - what is the purpose of the map function?  the reduce function? 
+
+how do you determine the key in a  map reduce operation
+
+what characteristics of traditional database are missing in NoSQL databases
+
+
+OLAP
+Data Warehouse  what is it and what is its purpose?
+
+Why are data warehouses databases usually on a separate server from the OLTP database
+
+Star schema design:  fact tables and dimension tables.  What attributes go into the fact table, which go into the dimension table. 
