@@ -54,13 +54,28 @@ Given a table definition,  how to check for normal form and fix any problems by 
 
 JDBC coding
 know how to code prepared statements, use results sets to retrieve data values, and commit a transaction.
+   --Prepared statement (Project2-controller doctor)
+   PreparedStatement ps = con.prepareStatement("select name, specialty, practice_since from doctor where id=?");
+   --Result set (Project2 - Controllerdoctor)
+   ResultSet rs = ps.executeQuery();
+      if (rs.next()) {
+         doctor.setName(rs.getString(1));
+         doctor.setPractice_since_year(rs.getString(3));
+         doctor.setSpecialty(rs.getString(2));
+         model.addAttribute("doctor", doctor);
+         return "doctor_edit";
+   --Commit (Project2 - Controllerdoctor)
+      ask team about commit 
+
 
 know to code setAutoCommit to use multi statement transactions
+   ask team about autocommit
 
 
 Disk architecture: 
 know what access time and data transfer time are 
    
+
 
 what is the difference between doing 100 random read operations versus 100 sequential read operations.  which one will be faster?  and why?
 
