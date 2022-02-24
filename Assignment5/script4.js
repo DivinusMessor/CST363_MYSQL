@@ -47,7 +47,7 @@ reduce3 = function(key, values) {
 }
 
 db.orders_out.mapReduce(mapf3, reduce3, {out:"script4_out"});
-res = db.script4_out.find().sort({value:-1}).limit(30);
+res = db.script4_out.find().sort({value:-1}).limit(27);
 
 while (res.hasNext()) {
     printjson(res.next());
