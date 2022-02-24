@@ -4,16 +4,52 @@ Review these topics for the final exam
 
 SQL
 know how to code seleect including subqueries,  grouping,  order by. 
-   
+   -- simple select (ASSIGNMENT1)
+   SELECT * from table;
+   -- group by (ASSIGNMENT1)
+   SELECT region.regionid, region.regionname, COUNT(store.storeid)
+   FROM region JOIN store ON region.regionid = store.regionid
+   GROUP BY region.regionid;
+   -- subqueries (ASSIGNMENT2)
+   SELECT categoryname, regionname, totalsales
+   FROM category_region outerp
+   WHERE totalsales =
+         (SELECT max(innerp.totalsales)
+         FROM category_region innerp
+         WHERE innerp.categoryname=outerp.categoryname);
+   -- order by (ASSIGNMENT2)
+   SELECT product.productid, product.productname, vendor.vendorname
+   FROM product NATURAL JOIN vendor
+   WHERE product.productprice < (SELECT AVG(product.productprice) FROM product)
+   ORDER BY product.productid;
+ 
 know how to code a create table statements
+   CREATE TABLE test (
+      ID INT AUTO INCREMENT
+      CUST VARCHAR
+   );
 
 
 ER design
 how to identify a 1:Many and Many:Many relationship in a ER diagram 
+   One to many would be like book to library example. There are many books to one library 
 
 How to translate entity attributes and relationship attributes in an ER diagram into SQL create table statements.
+   -- check in with team 
 
 Given a table definition,  how to check for normal form and fix any problems by splitting the table into multiple tables
+   https://www.youtube.com/watch?v=J-drts33N8g&t=294s
+   Check for normalization. The 3 forms of normalization
+   First form 
+      All rows must be unique (no duplicate rows)
+      Each cell must only contain a single value (not a list)
+      Each value should be non divisible (can't be split any further)
+   Second Form 
+      Database nust be in first form 
+      non partial dependency (all non prime attributes should be fully functionally dependent on the canidate key)
+   Third Form 
+      Must be in first and second form 
+      No transistive dependency (All fields must only be determined by the primary/composite key, not by other keys)
 
 
 JDBC coding
@@ -24,6 +60,7 @@ know to code setAutoCommit to use multi statement transactions
 
 Disk architecture: 
 know what access time and data transfer time are 
+   
 
 what is the difference between doing 100 random read operations versus 100 sequential read operations.  which one will be faster?  and why?
 
