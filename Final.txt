@@ -4,7 +4,7 @@ Review these topics for the final exam
 
 SQL
 know how to code seleect including subqueries,  grouping,  order by. 
-
+   
 know how to code a create table statements
 
 
