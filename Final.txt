@@ -72,9 +72,10 @@ know to code setAutoCommit to use multi statement transactions
    ask team about autocommit
 
 
-Disk architecture: 
+Disk architecture: (Module 5 slides)
 know what access time and data transfer time are 
-   
+   Acess time: ~4 ms = 0.004 sec (Time to move the head to the proper track)
+   Data transfer: ~ 200mbs/sec (Amount of data (bytes) that can be read from disk into memory per second)
 
 
 what is the difference between doing 100 random read operations versus 100 sequential read operations.  which one will be faster?  and why?
@@ -86,22 +87,40 @@ review B+ Tree visualization exercise from week 5.  How is the B+ Tree searched 
 Transactions (review slides from week 5)
 
 What do the letters ACID mean.
+   A: Atomic behavior - all or none 
+      A single SQL statement is always atmoic 
+      Multiple SQLs can be grouped into a transcation 
+         START TRANSACTION statement 
+         COMMIT statement 
+      The transation is atomic 
+   C: Consistency of database 
+      a database may be inconsistent during the transaction 
+   I: Isolation - concurrent programs dont interfere with other 
+      Equivalent to running programs serially one at a time 
+   D: Durability - changes once committed are not lost even when system crashes 
 
 How do you start, end, and abort a transaction when coding in Java using JDBC
+   -check
 
-
-Concurrency -- review slides from week 5
+Concurrency -- review slides from week 5 - listen to lecture again 
 Be able to describe how the concurrency problems of lost update, inconsistent read, inconsistent write and phantoms come about
+   -- Lost update: the table should have updated 2 times but only recorded one of the updates 
+   -- inconsistent Read: Does not properly read and input does not match output? 
 
 Know about S and X locks and which locks are compatible and which locks require a requester to wait
+   S: Shared mode - with shared mode access, a transaction can read but not write a data item 
+      Trans 1 holds S lock on row A : trans 2 can be granted an s lock on row a, but must wait for X lock on A 
+   X: exclusive mode - a transaction can read and write a data item 
+      trans 1 holds x lock on row A : trans 2 must wait for any lock on row A
 
 Know about the different isolation levels:  Read Committed, Repeatable Read and Serializable  in terms of lock usage and which concurrency problems are solved and not solved by each level 
 
 
 Snapshot isolation -- review assignment from week 5 
-NoSQL  - review slides from week 6  
 
+NoSQL  - review slides from week 6  
 Know about Replication and leader, follower and which one are write requests directed to, and which one are read requests directed to
+   
 
 Know about partitioning of databases and partitioning by key hash value and by key range.
 
