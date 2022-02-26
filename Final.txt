@@ -69,16 +69,17 @@ know how to code prepared statements, use results sets to retrieve data values, 
 
 
 know to code setAutoCommit to use multi statement transactions
-   ask team about autocommit
+   Java at the start so you can do a bunch of separate operations and then you do the commit() at the end of it all
 
 
 Disk architecture: (Module 5 slides)
 know what access time and data transfer time are 
    Acess time: ~4 ms = 0.004 sec (Time to move the head to the proper track)
-   Data transfer: ~ 200mbs/sec (Amount of data (bytes) that can be read from disk into memory per second)
+   Data transfer: ~ 200mbs/sec -0.02 ms- (Amount of data (bytes) that can be read from disk into memory per second)
 
 
 what is the difference between doing 100 random read operations versus 100 sequential read operations.  which one will be faster?  and why?
+   Because reading randomly involves a higher number of seek operations than does sequential reading, random reads deliver a lower rate of throughput.
 
 
 Index
@@ -86,8 +87,8 @@ review B+ Tree visualization exercise from week 5.  How is the B+ Tree searched 
 
 Transactions (review slides from week 5)
 
-What do the letters ACID mean.
-   A: Atomic behavior - all or none 
+What do the letters ACID mean. (lecture 36:21)
+   A: Atomic behavior - all or none (must complete transaction or does nothing) (if not work rolls back to begining)
       A single SQL statement is always atmoic 
       Multiple SQLs can be grouped into a transcation 
          START TRANSACTION statement 
@@ -104,7 +105,7 @@ How do you start, end, and abort a transaction when coding in Java using JDBC
 
 Concurrency -- review slides from week 5 - listen to lecture again 
 Be able to describe how the concurrency problems of lost update, inconsistent read, inconsistent write and phantoms come about
-   -- Lost update: the table should have updated 2 times but only recorded one of the updates 
+   -- Lost update: the table should have updated 2 times but recorded each updated from the inital state. x = 10 , t1 = x+ 1 = 11, t2 = x + 1 = 11 but it should be 12 now but its at 11 
    -- inconsistent Read: Does not properly read and input does not match output? 
 
 Know about S and X locks and which locks are compatible and which locks require a requester to wait
@@ -117,12 +118,21 @@ Know about the different isolation levels:  Read Committed, Repeatable Read and 
 
 
 Snapshot isolation -- review assignment from week 5 
+   --check in with team
 
 NoSQL  - review slides from week 6  
 Know about Replication and leader, follower and which one are write requests directed to, and which one are read requests directed to
-   
+   -- one replication is the leader, gets all write and read requests then cahanges the local store 
+   -- other replias are followers 
+      - leader sends data changes to followers 
+      - they update their local copy and acknowledge the leader 
+   -- read requests can be sent to any replicas
+      - for Consistency, send read requests to leader 
 
 Know about partitioning of databases and partitioning by key hash value and by key range.
+   -- Particitioning: by key range, by hash 
+   -- ex. Key range, last name 
+      - name like 'M%'
 
 What is wrong with the SQL data model of tables with rows and columns that make companies use a NoSQL database instead?
 
